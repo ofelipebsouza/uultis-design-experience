@@ -3,3 +3,6 @@
 !/dist/**
 !/vercel.json
 !/.vercelignore
+!/package.json
+!/scripts/
+!/scripts/**

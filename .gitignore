@@ -4,6 +4,7 @@
 .env.*
 !.env.example
 node_modules/
+public/
 .DS_Store
 *.log
 validation.json

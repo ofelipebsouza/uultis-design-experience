@@ -141,8 +141,79 @@
   }
 
   function closeDialog(dialog) {
+    if (dialog === productDialog) stopProductViewer();
     if (dialog.open) dialog.close();
     syncDialogState();
+  }
+
+  function productResources(p) {
+    const result = { sheets:[], models:[], other:[] };
+    for (const resource of p.specs || []) {
+      if (!resource?.url) continue;
+      let url;
+      try { url = new URL(resource.url); } catch { continue; }
+      if (!['https:','http:'].includes(url.protocol)) continue;
+      if (/ficha/.test(normalize(resource.label))) {
+        result.sheets.push(resource);
+      } else if (url.hostname === '3dwarehouse.sketchup.com') {
+        result.models.push({ ...resource, provider:'SketchUp', direct:/^\/model\/[^/]+/.test(url.pathname) });
+      } else if (/(^|\.)casoca\.com\.br$/.test(url.hostname)) {
+        result.models.push({ ...resource, provider:'Casoca', direct:false });
+      } else {
+        result.other.push(resource);
+      }
+    }
+    const order = { 'pt-BR':0, 'en-US':1, 'es-ES':2, 'es':2 };
+    result.sheets.sort((a,b) => (order[a.language] ?? 3) - (order[b.language] ?? 3));
+    return result;
+  }
+
+  function sheetLanguage(language) {
+    return ({ 'pt-BR':'Português', 'en-US':'English', 'es-ES':'Español', es:'Español' })[language] || 'Outra versão';
+  }
+
+  function modelResourceLink(resource) {
+    const title = resource.provider === 'SketchUp' ? (resource.direct ? 'Modelo 3D · SketchUp' : 'Buscar modelos · SketchUp') : 'Arquivos 3D · Casoca';
+    const detail = resource.provider === 'SketchUp' ? (resource.direct ? 'Modelo específico da peça' : 'Busca no acervo oficial da Uultis') : 'Página da peça no Casoca';
+    return `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"><span><strong>${title}</strong><small>${detail} · Abre em nova aba</small></span>${icon('diagonal')}</a>`;
+  }
+
+  function projectResources(p, resources) {
+    const sheets = resources.sheets.map((resource,index) => {
+      const sameLanguage = resources.sheets.filter(sheet => sheet.language === resource.language);
+      const number = resources.sheets.slice(0,index+1).filter(sheet => sheet.language === resource.language).length;
+      const fileLabel = sameLanguage.length > 1 ? ` · Arquivo ${number}` : '';
+      return `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"${resource.language ? ` hreflang="${esc(resource.language)}"` : ''}><span><strong>Ficha técnica · ${esc(sheetLanguage(resource.language))}${fileLabel}</strong><small>${resource.language ? esc(resource.language) : 'Idioma não informado'} · PDF · Abre em nova aba</small></span>${icon('download')}</a>`;
+    }).join('');
+    const extra = resources.other.map(resource => `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"><span><strong>${esc(resource.label || 'Recurso oficial')}</strong><small>Abre em nova aba</small></span>${icon('diagonal')}</a>`);
+    if (p.video_url) {
+      const match = p.video_url.match(/embed\/([\w-]+)/);
+      const url = match ? `https://www.youtube.com/watch?v=${match[1]}` : p.video_url;
+      extra.push(`<a class="product-resource-link" href="${esc(url)}" target="_blank" rel="noopener"><span><strong>Filme da peça</strong><small>Abre em nova aba</small></span>${icon('play')}</a>`);
+    }
+    if (!sheets && !resources.models.length && !extra.length) return '';
+    return `<section class="product-project" aria-labelledby="product-project-title"><div class="product-project-heading"><span class="eyebrow">DA INSPIRAÇÃO AO PROJETO</span><h3 id="product-project-title">Para o seu <em>projeto.</em></h3><p>Fichas técnicas e recursos publicados pela Uultis para conhecer a peça e planejar o seu espaço.</p></div>${sheets ? `<div class="product-resource-group"><h4>Fichas técnicas <span>${resources.sheets.length} ${resources.sheets.length === 1 ? 'arquivo' : 'arquivos'}</span></h4>${sheets}</div>` : ''}${resources.models.length ? `<div class="product-resource-group"><h4>Modelos e arquivos 3D</h4>${resources.models.map(modelResourceLink).join('')}</div>` : ''}${extra.length ? `<div class="product-resource-group"><h4>Mais sobre a peça</h4>${extra.join('')}</div>` : ''}</section>`;
+  }
+
+  function stopProductViewer() {
+    // Removing a provider frame also stops its rendering and releases its resources.
+    $$('iframe',productDialog).forEach(frame => frame.remove());
+  }
+
+  function selectProductMedia(mode, moveFocus = false) {
+    const models = mode === 'models';
+    const photoPanel = $('#product-photo-panel');
+    const modelPanel = $('#product-model-panel');
+    if (!photoPanel || !modelPanel) return;
+    photoPanel.hidden = models;
+    modelPanel.hidden = !models;
+    if (!models) stopProductViewer();
+    $$('[data-product-media]',productDialog).forEach(tab => {
+      const selected = tab.dataset.productMedia === mode;
+      tab.setAttribute('aria-selected',String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected && moveFocus) tab.focus({preventScroll:true});
+    });
   }
 
   function openProduct(id) {
@@ -152,19 +223,14 @@
       location.replace('#colecao');
       return;
     }
+    stopProductViewer();
     const pics = p.display_images?.length ? p.display_images : [p.image];
-    const preferredSpec = (p.specs || []).find(s => s.language === 'pt-BR' && /ficha/i.test(s.label));
-    const model = (p.specs || []).find(s => /modelo 3d/i.test(s.label));
-    const resources = [];
-    if (preferredSpec) resources.push(`<a href="${esc(preferredSpec.url)}" target="_blank" rel="noopener"><span>Ficha técnica · Português</span>${icon('download')}</a>`);
-    if (model) resources.push(`<a href="${esc(model.url)}" target="_blank" rel="noopener"><span>Modelo 3D · SketchUp</span>${icon('diagonal')}</a>`);
-    if (p.video_url) {
-      const match = p.video_url.match(/embed\/([\w-]+)/);
-      const url = match ? `https://www.youtube.com/watch?v=${match[1]}` : p.video_url;
-      resources.push(`<a href="${esc(url)}" target="_blank" rel="noopener"><span>Filme da peça</span>${icon('play')}</a>`);
-    }
+    const resources = productResources(p);
+    const hasModels = resources.models.length > 0;
+    const galleryTabs = hasModels ? `<div class="product-media-tabs" role="tablist" aria-label="Explorar ${esc(p.name)}"><button type="button" id="product-tab-photos" role="tab" aria-controls="product-photo-panel" aria-selected="true" data-product-media="photos">Fotos <span>${String(pics.length).padStart(2,'0')}</span></button><button type="button" id="product-tab-models" role="tab" aria-controls="product-model-panel" aria-selected="false" tabindex="-1" data-product-media="models">Recursos 3D ${icon('diagonal')}</button></div>` : '';
+    const modelPanel = hasModels ? `<div class="product-model-panel" id="product-model-panel" role="tabpanel" aria-labelledby="product-tab-models" tabindex="0" hidden><div class="product-model-preview"><img src="${esc(pics[0])}" alt="${esc(p.name)} — fotografia da peça" width="1400" height="1400"><span class="product-model-mark" aria-hidden="true">3D</span></div><div class="product-model-copy"><span class="eyebrow">DO OBJETO AO ESPAÇO</span><h3>Imagine em cada <em>ângulo.</em></h3><p>Explore os modelos e arquivos da peça nos acervos oficiais. Escolha uma plataforma para continuar em uma nova aba.</p></div><div class="product-model-links">${resources.models.map(modelResourceLink).join('')}</div></div>` : '';
     activeProductId = id;
-    $('#product-content').innerHTML = `<div class="product-content-layout"><div class="product-gallery"><div class="product-main-image"><img id="product-main-img" src="${esc(pics[0])}" alt="${esc(p.name)} — ${esc(p.category)} Uultis" width="1400" height="1400"></div><div class="product-gallery-label"><span>O DESIGN EM CADA DETALHE</span><span id="product-image-index">01 / ${String(pics.length).padStart(2,'0')}</span></div>${pics.length > 1 ? `<div class="product-thumbnails" role="group" aria-label="Imagens de ${esc(p.name)}">${pics.map((src,i) => `<button class="${i === 0 ? 'active' : ''}" data-gallery-image="${i}" aria-label="Ver imagem ${i+1}" aria-pressed="${i === 0}"><img src="${esc(src)}" alt="" width="62" height="62"></button>`).join('')}</div>` : ''}</div><div class="product-detail"><span class="eyebrow">UULTIS / ${esc(p.category).toUpperCase()}</span><h2 id="product-title">${esc(p.name)}</h2><div class="product-byline"><span>DESIGN</span>${p.designer_url ? `<a href="${esc(p.designer_url)}" target="_blank" rel="noopener">${esc(p.designer)}</a>` : esc(p.designer || 'Uultis')}</div><div class="product-description">${p.description.split(/\n\s*\n/).map(par => `<p>${esc(par)}</p>`).join('')}</div><dl class="product-meta"><div><dt>CATEGORIA</dt><dd>${esc(p.category)}</dd></div>${p.year ? `<div><dt>ANO</dt><dd>${esc(p.year)}</dd></div>` : ''}</dl>${p.availability_note ? `<p class="product-category-label">Edição de colecionador · Unidades já comercializadas, conforme descrição da marca.</p>` : ''}<div class="product-actions"><a class="outline-button" href="https://www.uultis.com/onde-encontrar" target="_blank" rel="noopener">${p.availability_note ? 'Conheça os pontos de venda' : 'Encontre uma loja'} ${icon('diagonal')}</a>${favoriteButton(p)}</div><a class="product-source" href="${esc(p.url)}" target="_blank" rel="noopener">Ver ${esc(p.name)} no site Uultis ${icon('diagonal')}</a>${resources.length ? `<div class="product-resources">${resources.join('')}</div>` : ''}</div></div>`;
+    $('#product-content').innerHTML = `<div class="product-content-layout"><div class="product-gallery">${galleryTabs}<div id="product-photo-panel" class="product-photo-panel"${hasModels ? ' role="tabpanel" aria-labelledby="product-tab-photos" tabindex="0"' : ''}><div class="product-main-image"><img id="product-main-img" src="${esc(pics[0])}" alt="${esc(p.name)} — ${esc(p.category)} Uultis" width="1400" height="1400"></div><div class="product-gallery-label"><span>O DESIGN EM CADA DETALHE</span><span id="product-image-index">01 / ${String(pics.length).padStart(2,'0')}</span></div>${pics.length > 1 ? `<div class="product-thumbnails" role="group" aria-label="Imagens de ${esc(p.name)}">${pics.map((src,i) => `<button class="${i === 0 ? 'active' : ''}" data-gallery-image="${i}" aria-label="Ver imagem ${i+1}" aria-pressed="${i === 0}"><img src="${esc(src)}" alt="" width="62" height="62"></button>`).join('')}</div>` : ''}</div>${modelPanel}</div><div class="product-detail"><span class="eyebrow">UULTIS / ${esc(p.category).toUpperCase()}</span><h2 id="product-title">${esc(p.name)}</h2><div class="product-byline"><span>DESIGN</span>${p.designer_url ? `<a href="${esc(p.designer_url)}" target="_blank" rel="noopener">${esc(p.designer)}</a>` : esc(p.designer || 'Uultis')}</div><div class="product-description">${p.description.split(/\n\s*\n/).map(par => `<p>${esc(par)}</p>`).join('')}</div><dl class="product-meta"><div><dt>CATEGORIA</dt><dd>${esc(p.category)}</dd></div>${p.year ? `<div><dt>ANO</dt><dd>${esc(p.year)}</dd></div>` : ''}</dl>${p.availability_note ? `<p class="product-category-label">Edição de colecionador · Unidades já comercializadas, conforme descrição da marca.</p>` : ''}<div class="product-actions"><a class="outline-button" href="https://www.uultis.com/onde-encontrar" target="_blank" rel="noopener">${p.availability_note ? 'Conheça os pontos de venda' : 'Encontre uma loja'} ${icon('diagonal')}</a>${favoriteButton(p)}</div><a class="product-source" href="${esc(p.url)}" target="_blank" rel="noopener">Ver ${esc(p.name)} no site Uultis ${icon('diagonal')}</a>${projectResources(p,resources)}</div></div>`;
     openDialog(productDialog);
     productDialog.scrollTop = 0;
     document.title = `${p.name} — ${p.category} | Uultis`;
@@ -325,6 +391,8 @@
       if (state.view === 'catalog' && state.mode === 'favorites') renderCatalog();
       return;
     }
+    const mediaTab = event.target.closest('[data-product-media]');
+    if (mediaTab && activeProductId) { selectProductMedia(mediaTab.dataset.productMedia); return; }
     const thumbnail = event.target.closest('[data-gallery-image]');
     if (thumbnail && activeProductId) {
       const p = byId.get(activeProductId);
@@ -388,6 +456,7 @@
     });
     dialog.addEventListener('close',() => {
       if (dialog === filmDialog) $('#film-player').innerHTML = '';
+      if (dialog === productDialog) stopProductViewer();
       if (dialog === productDialog && !closingForRoute && location.hash.startsWith('#produto/')) {
         history.replaceState(null,'',baseHash);
         activeProductId = null;
@@ -397,6 +466,13 @@
     });
   });
   document.addEventListener('keydown',event => {
+    const mediaTab = event.target.closest?.('[data-product-media]');
+    if (mediaTab && ['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) {
+      event.preventDefault();
+      const mode = event.key === 'Home' ? 'photos' : event.key === 'End' ? 'models' : mediaTab.dataset.productMedia === 'photos' ? 'models' : 'photos';
+      selectProductMedia(mode,true);
+      return;
+    }
     if (event.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !$('dialog[open]')) { event.preventDefault(); showSearch(); }
   });
   document.addEventListener('error',event => {
