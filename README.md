@@ -4,7 +4,15 @@ Proposta de experiência digital para a Uultis, com apresentação editorial, ca
 
 **Código-fonte:** [ofelipebsouza/uultis-design-experience](https://github.com/ofelipebsouza/uultis-design-experience).
 
-O projeto é estático, preparado para publicação na Vercel. Não exige instalação de pacotes nem etapa de build: os arquivos publicados estão em `dist/`.
+**Endereços do projeto na Vercel:**
+
+- [Experiência principal](https://uultis-design-experience.vercel.app/)
+- [Branding](https://uultis-design-experience.vercel.app/branding/)
+- [Guia de estilo](https://uultis-design-experience.vercel.app/guia-de-estilo/)
+
+A configuração de produção usa o domínio `uultis-design-experience.vercel.app` e a branch `main` do repositório GitHub.
+
+O projeto é estático e usa a Vercel como destino de publicação. Não exige instalação de pacotes nem etapa de build: os arquivos de publicação estão em `dist/`.
 
 ## Páginas
 
@@ -59,13 +67,15 @@ Para encerrar o servidor, pressionar `Ctrl+C` no terminal.
 | `dist/assets/catalog.json` | Dados estruturados dos produtos. |
 | `dist/assets/catalog.js` | Os mesmos dados disponibilizados ao navegador em `window.UULTIS_PRODUCTS`. |
 | `dist/assets/editorial.js` | Imagens, créditos e links dos projetos apresentados. |
-| `dist/assets/` | Wordmarks, fontes locais, imagens de produtos e fotografias editoriais. |
+| `dist/assets/` | Wordmarks, fontes de licença aberta e suas licenças, imagens de produtos e fotografias editoriais. |
 | `vercel.json` | Configuração estática de publicação. |
 | `.gitignore` e `.vercelignore` | Exclusão de arquivos locais e seleção dos arquivos de hospedagem. |
 
 ## Publicação na Vercel
 
-Importar o repositório `ofelipebsouza/uultis-design-experience`, usando a raiz do repositório como Root Directory. O arquivo `vercel.json` define:
+O projeto `uultis-design-experience` na Vercel está conectado ao repositório GitHub `ofelipebsouza/uultis-design-experience`. A branch de produção é `main`, e a raiz do repositório é o Root Directory. Pela integração Git, os commits enviados a `main` acionam novos deploys de produção. Consultar o resultado de cada deploy na Vercel para confirmar a publicação de uma alteração.
+
+O arquivo `vercel.json` define:
 
 - Framework: Other (`null`).
 - Build Command e Install Command: vazios.
@@ -74,7 +84,7 @@ Importar o repositório `ofelipebsouza/uultis-design-experience`, usando a raiz 
 
 O conteúdo de `dist/` já está pronto para ser servido. Não é necessário adicionar `package.json`, instalar um framework ou gerar novamente os arquivos para publicar esta versão.
 
-Após confirmar a origem definitiva da publicação, manter os metadados `canonical` e Open Graph coerentes com esse endereço. A proposta preserva `noindex, nofollow`.
+A origem definida é `https://uultis-design-experience.vercel.app`. Os metadados `canonical`, `og:url` e `og:image` das três páginas usam esse domínio, com canonical próprio para cada rota. A proposta preserva `noindex, nofollow`.
 
 ## Manutenção
 
@@ -97,7 +107,21 @@ Ao substituir uma imagem, gerar sua versão otimizada, preservar a identidade vi
 
 Ao modificar cores, fontes, componentes ou movimento, atualizar também o guia de estilo. A página de branding registra a intenção criativa e deve acompanhar mudanças de posicionamento da proposta.
 
-O wordmark Uultis e as fontes Athelas Regular e SuisseIntl Light/Medium são referências da identidade extraída. Os fundos quentes e neutros e a composição editorial fazem parte desta proposta digital. O material não constitui um manual oficial aprovado pela Uultis.
+O wordmark Uultis é preservado como referência da marca. Athelas Regular e SuisseIntl Light/Medium são referências tipográficas observadas no site original; os arquivos dessas famílias não são redistribuídos neste repositório. A versão pública utiliza Inter na interface e Libre Baskerville nos destaques editoriais. Os fundos quentes e neutros, a composição e a escolha tipográfica pública fazem parte desta proposta digital. O material não constitui um manual oficial aprovado pela Uultis.
+
+### Tipografia pública e licenças
+
+Inter e Libre Baskerville são distribuídas sob a SIL Open Font License (OFL). A versão pública inclui os arquivos tipográficos e os respectivos textos de licença:
+
+| Arquivo | Uso |
+| --- | --- |
+| `dist/assets/Inter-Variable.ttf` | Interface, navegação, textos e hierarquia sem serifa. |
+| `dist/assets/LibreBaskerville-Variable.ttf` | Destaques editoriais com serifa. |
+| `dist/assets/LibreBaskerville-Italic.ttf` | Ênfases editoriais em itálico. |
+| `dist/assets/OFL-Inter.txt` | Licença da família Inter. |
+| `dist/assets/OFL-LibreBaskerville.txt` | Licença da família Libre Baskerville. |
+
+Manter os textos de licença junto aos arquivos ao redistribuir esta versão. As referências Athelas e SuisseIntl documentam a pesquisa da identidade original; a implementação pública usa somente as famílias de licença aberta listadas acima.
 
 ### Conferência antes de publicar
 
