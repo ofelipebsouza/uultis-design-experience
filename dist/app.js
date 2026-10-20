@@ -19,7 +19,7 @@
   let favorites;
   try { const saved = JSON.parse(localStorage.getItem('uultis-selection-v1') || '[]'); favorites = new Set(Array.isArray(saved) ? saved.filter(id => byId.has(String(id))).map(String) : []); } catch { favorites = new Set(); }
   const state = { mode:'all', category:'', query:'', sort:'featured', limit:24, view:'home' };
-  let baseHash = '#inicio';
+  let baseHash = '#home';
   let lastFocus = null;
   let toastTimer;
   let activeProductId = null;
@@ -29,6 +29,12 @@
   let needsFrame = false;
   let searchTimer;
   const searchIndexes = new Map(products.map(p => [p.id, normalize([p.name,p.category,p.designer,p.description,...(p.tags || []).map(t => t.label)].join(' '))]));
+
+  // Keep existing bookmarks working while all published navigation uses English.
+  function canonicalHash(hash) {
+    if (hash.startsWith('#produto/')) return hash.replace('#produto/', '#product/');
+    return ({ '#inicio':'#home', '#colecao':'#collection', '#favoritos':'#favorites', '#essencia':'#essence', '#ambientes':'#inspiration', '#materia':'#materials', '#curadoria':'#curation', '#encontre':'#find-us', '#conteudo':'#content' })[hash] || hash;
+  }
 
   function announce(message) {
     const toast = $('#toast');
@@ -40,25 +46,25 @@
 
   function favoriteButton(p, className = '') {
     const selected = favorites.has(p.id);
-    return `<button class="favorite-button ${className}" data-favorite="${esc(p.id)}" aria-pressed="${selected}" aria-label="${selected ? 'Remover' : 'Adicionar'} ${esc(p.name)} ${selected ? 'da' : 'à'} minha seleção">${icon('heart')}</button>`;
+    return `<button class="favorite-button ${className}" data-favorite="${esc(p.id)}" aria-pressed="${selected}" aria-label="${selected ? 'Remove' : 'Add'} ${esc(p.name)} ${selected ? 'from' : 'to'} my selection">${icon('heart')}</button>`;
   }
 
   function productCard(p, index = 0) {
     const hasAlt = p.display_images?.length > 1;
-    const tag = p.availability_note ? 'Edição de colecionador' : p.year === '2026' ? 'Coleção 2026' : '';
-    return `<article class="product-card"><a class="product-image-link" href="#produto/${esc(p.id)}" aria-label="Conhecer ${esc(p.name)}, ${esc(p.category)}">${tag ? `<span class="product-tag">${tag}</span>` : ''}<img src="${esc(p.thumbnail || p.image)}" alt="${esc(p.name)} — ${esc(p.category)} Uultis" width="760" height="760" loading="lazy" decoding="async">${hasAlt ? `<img class="card-alternate" src="${esc(p.display_images[1])}" alt="" aria-hidden="true" width="760" height="760" loading="lazy" decoding="async">` : ''}<span class="card-discover">${icon('arrow')}</span></a>${favoriteButton(p)}<div class="product-card-info"><div><h3><a href="#produto/${esc(p.id)}">${esc(p.name)}</a></h3><p>${esc(p.designer || 'Uultis')}</p></div><span>${esc(p.category)}</span></div></article>`;
+    const tag = p.availability_note ? 'Collector’s edition' : p.year === '2026' ? '2026 Collection' : '';
+    return `<article class="product-card"><a class="product-image-link" href="#product/${esc(p.id)}" aria-label="Discover ${esc(p.name)}, ${esc(p.category)}">${tag ? `<span class="product-tag">${tag}</span>` : ''}<img src="${esc(p.thumbnail || p.image)}" alt="${esc(p.name)} — ${esc(p.category)} Uultis" width="760" height="760" loading="lazy" decoding="async">${hasAlt ? `<img class="card-alternate" src="${esc(p.display_images[1])}" alt="" aria-hidden="true" width="760" height="760" loading="lazy" decoding="async">` : ''}<span class="card-discover">${icon('arrow')}</span></a>${favoriteButton(p)}<div class="product-card-info"><div><h3><a href="#product/${esc(p.id)}">${esc(p.name)}</a></h3><p>${esc(p.designer || 'Uultis')}</p></div><span>${esc(p.category)}</span></div></article>`;
   }
 
   function ordered(list, order = 'featured') {
     return [...list].sort((a,b) => {
-      if (order === 'name') return a.name.localeCompare(b.name,'pt-BR');
-      if (order === 'newest') return Number(b.year || 0) - Number(a.year || 0) || a.name.localeCompare(b.name,'pt-BR');
-      return (curatedRank.get(a.id) ?? 999) - (curatedRank.get(b.id) ?? 999) || Number(b.year || 0) - Number(a.year || 0) || a.name.localeCompare(b.name,'pt-BR');
+      if (order === 'name') return a.name.localeCompare(b.name,'en-US');
+      if (order === 'newest') return Number(b.year || 0) - Number(a.year || 0) || a.name.localeCompare(b.name,'en-US');
+      return (curatedRank.get(a.id) ?? 999) - (curatedRank.get(b.id) ?? 999) || Number(b.year || 0) - Number(a.year || 0) || a.name.localeCompare(b.name,'en-US');
     });
   }
 
   function matchesCategory(p, category) {
-    return !category || category === 'Todos' || (category === 'Mesas' ? /mesa/i.test(p.category) : p.category === category);
+    return !category || category === 'All' || (category === 'Tables' ? /table/i.test(p.category) : p.category === category);
   }
 
   function matchesQuery(p, query) {
@@ -66,8 +72,8 @@
     return words.every(word => searchIndexes.get(p.id).includes(word));
   }
 
-  function renderCuration(category = 'Destaques') {
-    const list = ordered(products.filter(p => category === 'Destaques' || matchesCategory(p,category))).slice(0,6);
+  function renderCuration(category = 'Featured') {
+    const list = ordered(products.filter(p => category === 'Featured' || matchesCategory(p,category))).slice(0,6);
     $('#curation-grid').innerHTML = list.map(productCard).join('');
     $$('[data-curation]').forEach(button => {
       const active = button.dataset.curation === category;
@@ -91,14 +97,14 @@
     const oldCount = append ? grid.children.length : 0;
     if (append) grid.insertAdjacentHTML('beforeend', shown.slice(oldCount).map(productCard).join(''));
     else grid.innerHTML = shown.map(productCard).join('');
-    $('#catalog-count').textContent = `${list.length} ${list.length === 1 ? 'peça' : 'peças'}`;
-    $('#catalog-shown').textContent = list.length ? `${shown.length} de ${list.length} ${list.length === 1 ? 'peça' : 'peças'}` : '';
+    $('#catalog-count').textContent = `${list.length} ${list.length === 1 ? 'piece' : 'pieces'}`;
+    $('#catalog-shown').textContent = list.length ? `${shown.length} of ${list.length} ${list.length === 1 ? 'piece' : 'pieces'}` : '';
     $('#load-more').hidden = shown.length >= list.length;
     $('#catalog-empty').hidden = list.length > 0;
     if (!list.length) {
-      $('#catalog-empty > span').textContent = state.mode === 'favorites' && !favorites.size ? 'Sua seleção começa aqui.' : 'Vamos descobrir algo novo?';
-      $('#catalog-empty p').textContent = state.mode === 'favorites' && !favorites.size ? 'Toque no coração de uma peça para guardá-la e voltar quando quiser.' : 'Nenhuma peça encontrada com esses filtros.';
-      $('#clear-filters').innerHTML = (state.mode === 'favorites' && !favorites.size ? 'Explorar a coleção ' : 'Limpar filtros ') + icon('arrow');
+      $('#catalog-empty > span').textContent = state.mode === 'favorites' && !favorites.size ? 'Your selection begins here.' : 'Ready to discover something new?';
+      $('#catalog-empty p').textContent = state.mode === 'favorites' && !favorites.size ? 'Tap the heart on a piece to save it and return whenever you like.' : 'No pieces match these filters.';
+      $('#clear-filters').innerHTML = (state.mode === 'favorites' && !favorites.size ? 'Explore the collection ' : 'Clear filters ') + icon('arrow');
     }
     $$('#filter-chips button').forEach(button => {
       const active = button.dataset.category === state.category;
@@ -118,12 +124,12 @@
     count.textContent = String(favorites.size);
     count.hidden = !favorites.size;
     $('.menu-fav-count').textContent = String(favorites.size);
-    $('.favorites-nav').setAttribute('aria-label',`Minha seleção, ${favorites.size} ${favorites.size === 1 ? 'peça' : 'peças'}`);
+    $('.favorites-nav').setAttribute('aria-label',`My selection, ${favorites.size} ${favorites.size === 1 ? 'piece' : 'pieces'}`);
     $$('[data-favorite]').forEach(button => {
       const id = button.dataset.favorite;
       const selected = favorites.has(id);
       button.setAttribute('aria-pressed',String(selected));
-      button.setAttribute('aria-label',`${selected ? 'Remover' : 'Adicionar'} ${byId.get(id)?.name || 'peça'} ${selected ? 'da' : 'à'} minha seleção`);
+      button.setAttribute('aria-label',`${selected ? 'Remove' : 'Add'} ${byId.get(id)?.name || 'piece'} ${selected ? 'from' : 'to'} my selection`);
     });
     try { localStorage.setItem('uultis-selection-v1',JSON.stringify([...favorites])); } catch { /* The selection remains available for the current session. */ }
   }
@@ -153,7 +159,7 @@
       let url;
       try { url = new URL(resource.url); } catch { continue; }
       if (!['https:','http:'].includes(url.protocol)) continue;
-      if (/ficha/.test(normalize(resource.label))) {
+      if (/technical sheet|ficha/.test(normalize(resource.label))) {
         result.sheets.push(resource);
       } else if (url.hostname === '3dwarehouse.sketchup.com') {
         result.models.push({ ...resource, provider:'SketchUp', direct:/^\/model\/[^/]+/.test(url.pathname) });
@@ -163,36 +169,36 @@
         result.other.push(resource);
       }
     }
-    const order = { 'pt-BR':0, 'en-US':1, 'es-ES':2, 'es':2 };
+    const order = { 'en-US':0, 'pt-BR':1, 'es-ES':2, 'es':2 };
     result.sheets.sort((a,b) => (order[a.language] ?? 3) - (order[b.language] ?? 3));
     return result;
   }
 
   function sheetLanguage(language) {
-    return ({ 'pt-BR':'Português', 'en-US':'English', 'es-ES':'Español', es:'Español' })[language] || 'Outra versão';
+    return ({ 'pt-BR':'Portuguese', 'en-US':'English', 'es-ES':'Spanish', es:'Spanish' })[language] || 'Other version';
   }
 
   function modelResourceLink(resource) {
-    const title = resource.provider === 'SketchUp' ? (resource.direct ? 'Modelo 3D · SketchUp' : 'Buscar modelos · SketchUp') : 'Arquivos 3D · Casoca';
-    const detail = resource.provider === 'SketchUp' ? (resource.direct ? 'Modelo específico da peça' : 'Busca no acervo oficial da Uultis') : 'Página da peça no Casoca';
-    return `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"><span><strong>${title}</strong><small>${detail} · Abre em nova aba</small></span>${icon('diagonal')}</a>`;
+    const title = resource.provider === 'SketchUp' ? (resource.direct ? '3D model · SketchUp' : 'Find models · SketchUp') : '3D files · Casoca';
+    const detail = resource.provider === 'SketchUp' ? (resource.direct ? 'Model of this piece' : 'Search the official Uultis collection') : 'This piece on Casoca';
+    return `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"><span><strong>${title}</strong><small>${detail} · Opens in a new tab</small></span>${icon('diagonal')}</a>`;
   }
 
   function projectResources(p, resources) {
     const sheets = resources.sheets.map((resource,index) => {
       const sameLanguage = resources.sheets.filter(sheet => sheet.language === resource.language);
       const number = resources.sheets.slice(0,index+1).filter(sheet => sheet.language === resource.language).length;
-      const fileLabel = sameLanguage.length > 1 ? ` · Arquivo ${number}` : '';
-      return `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"${resource.language ? ` hreflang="${esc(resource.language)}"` : ''}><span><strong>Ficha técnica · ${esc(sheetLanguage(resource.language))}${fileLabel}</strong><small>${resource.language ? esc(resource.language) : 'Idioma não informado'} · PDF · Abre em nova aba</small></span>${icon('download')}</a>`;
+      const fileLabel = sameLanguage.length > 1 ? ` · File ${number}` : '';
+      return `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"${resource.language ? ` hreflang="${esc(resource.language)}"` : ''}><span><strong>Technical sheet · ${esc(sheetLanguage(resource.language))}${fileLabel}</strong><small>${resource.language ? esc(resource.language) : 'Language not specified'} · PDF · Opens in a new tab</small></span>${icon('download')}</a>`;
     }).join('');
-    const extra = resources.other.map(resource => `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"><span><strong>${esc(resource.label || 'Recurso oficial')}</strong><small>Abre em nova aba</small></span>${icon('diagonal')}</a>`);
+    const extra = resources.other.map(resource => `<a class="product-resource-link" href="${esc(resource.url)}" target="_blank" rel="noopener"><span><strong>${esc(resource.label || 'Official resource')}</strong><small>Opens in a new tab</small></span>${icon('diagonal')}</a>`);
     if (p.video_url) {
       const match = p.video_url.match(/embed\/([\w-]+)/);
       const url = match ? `https://www.youtube.com/watch?v=${match[1]}` : p.video_url;
-      extra.push(`<a class="product-resource-link" href="${esc(url)}" target="_blank" rel="noopener"><span><strong>Filme da peça</strong><small>Abre em nova aba</small></span>${icon('play')}</a>`);
+      extra.push(`<a class="product-resource-link" href="${esc(url)}" target="_blank" rel="noopener"><span><strong>Product film</strong><small>Opens in a new tab</small></span>${icon('play')}</a>`);
     }
     if (!sheets && !resources.models.length && !extra.length) return '';
-    return `<section class="product-project" aria-labelledby="product-project-title"><div class="product-project-heading"><span class="eyebrow">DA INSPIRAÇÃO AO PROJETO</span><h3 id="product-project-title">Para o seu <em>projeto.</em></h3><p>Fichas técnicas e recursos publicados pela Uultis para conhecer a peça e planejar o seu espaço.</p></div>${sheets ? `<div class="product-resource-group"><h4>Fichas técnicas <span>${resources.sheets.length} ${resources.sheets.length === 1 ? 'arquivo' : 'arquivos'}</span></h4>${sheets}</div>` : ''}${resources.models.length ? `<div class="product-resource-group"><h4>Modelos e arquivos 3D</h4>${resources.models.map(modelResourceLink).join('')}</div>` : ''}${extra.length ? `<div class="product-resource-group"><h4>Mais sobre a peça</h4>${extra.join('')}</div>` : ''}</section>`;
+    return `<section class="product-project" aria-labelledby="product-project-title"><div class="product-project-heading"><span class="eyebrow">FROM INSPIRATION TO YOUR PROJECT</span><h3 id="product-project-title">For your <em>project.</em></h3><p>Technical sheets and resources published by Uultis to help you discover the piece and plan your space.</p></div>${sheets ? `<div class="product-resource-group"><h4>Technical sheets <span>${resources.sheets.length} ${resources.sheets.length === 1 ? 'file' : 'files'}</span></h4>${sheets}</div>` : ''}${resources.models.length ? `<div class="product-resource-group"><h4>3D models and files</h4>${resources.models.map(modelResourceLink).join('')}</div>` : ''}${extra.length ? `<div class="product-resource-group"><h4>More about this piece</h4>${extra.join('')}</div>` : ''}</section>`;
   }
 
   function stopProductViewer() {
@@ -219,28 +225,29 @@
   function openProduct(id) {
     const p = byId.get(id);
     if (!p) {
-      announce('Esta peça não foi encontrada. Explore a coleção.');
-      location.replace('#colecao');
+      announce('This piece could not be found. Explore the collection.');
+      location.replace('#collection');
       return;
     }
     stopProductViewer();
     const pics = p.display_images?.length ? p.display_images : [p.image];
     const resources = productResources(p);
     const hasModels = resources.models.length > 0;
-    const galleryTabs = hasModels ? `<div class="product-media-tabs" role="tablist" aria-label="Explorar ${esc(p.name)}"><button type="button" id="product-tab-photos" role="tab" aria-controls="product-photo-panel" aria-selected="true" data-product-media="photos">Fotos <span>${String(pics.length).padStart(2,'0')}</span></button><button type="button" id="product-tab-models" role="tab" aria-controls="product-model-panel" aria-selected="false" tabindex="-1" data-product-media="models">Recursos 3D ${icon('diagonal')}</button></div>` : '';
-    const modelPanel = hasModels ? `<div class="product-model-panel" id="product-model-panel" role="tabpanel" aria-labelledby="product-tab-models" tabindex="0" hidden><div class="product-model-preview"><img src="${esc(pics[0])}" alt="${esc(p.name)} — fotografia da peça" width="1400" height="1400"><span class="product-model-mark" aria-hidden="true">3D</span></div><div class="product-model-copy"><span class="eyebrow">DO OBJETO AO ESPAÇO</span><h3>Imagine em cada <em>ângulo.</em></h3><p>Explore os modelos e arquivos da peça nos acervos oficiais. Escolha uma plataforma para continuar em uma nova aba.</p></div><div class="product-model-links">${resources.models.map(modelResourceLink).join('')}</div></div>` : '';
+    const galleryTabs = hasModels ? `<div class="product-media-tabs" role="tablist" aria-label="Explore ${esc(p.name)}"><button type="button" id="product-tab-photos" role="tab" aria-controls="product-photo-panel" aria-selected="true" data-product-media="photos">Photos <span>${String(pics.length).padStart(2,'0')}</span></button><button type="button" id="product-tab-models" role="tab" aria-controls="product-model-panel" aria-selected="false" tabindex="-1" data-product-media="models">3D resources ${icon('diagonal')}</button></div>` : '';
+    const nativeStudy = ['290','291'].includes(String(p.id)) ? `<a class="native-studio-link" href="/room-studio/?product=${esc(p.id)}"><span class="eyebrow">INTERACTIVE ROOM STUDIO</span><strong>See ${esc(p.name)} in a space.</strong><span>Orbit, zoom, explore finishes and placement ${icon('arrow')}</span><small>Approximate 3D study based on published dimensions.</small></a>` : '';
+    const modelPanel = hasModels ? `<div class="product-model-panel" id="product-model-panel" role="tabpanel" aria-labelledby="product-tab-models" tabindex="0" hidden>${nativeStudy}<div class="product-model-preview"><img src="${esc(pics[0])}" alt="${esc(p.name)} — product photograph" width="1400" height="1400"><span class="product-model-mark" aria-hidden="true">3D</span></div><div class="product-model-copy"><span class="eyebrow">FROM OBJECT TO SPACE</span><h3>Imagine every <em>angle.</em></h3><p>Explore models and files for this piece in the official collections. Choose a platform to continue in a new tab.</p></div><div class="product-model-links">${resources.models.map(modelResourceLink).join('')}</div></div>` : '';
     activeProductId = id;
-    $('#product-content').innerHTML = `<div class="product-content-layout"><div class="product-gallery">${galleryTabs}<div id="product-photo-panel" class="product-photo-panel"${hasModels ? ' role="tabpanel" aria-labelledby="product-tab-photos" tabindex="0"' : ''}><div class="product-main-image"><img id="product-main-img" src="${esc(pics[0])}" alt="${esc(p.name)} — ${esc(p.category)} Uultis" width="1400" height="1400"></div><div class="product-gallery-label"><span>O DESIGN EM CADA DETALHE</span><span id="product-image-index">01 / ${String(pics.length).padStart(2,'0')}</span></div>${pics.length > 1 ? `<div class="product-thumbnails" role="group" aria-label="Imagens de ${esc(p.name)}">${pics.map((src,i) => `<button class="${i === 0 ? 'active' : ''}" data-gallery-image="${i}" aria-label="Ver imagem ${i+1}" aria-pressed="${i === 0}"><img src="${esc(src)}" alt="" width="62" height="62"></button>`).join('')}</div>` : ''}</div>${modelPanel}</div><div class="product-detail"><span class="eyebrow">UULTIS / ${esc(p.category).toUpperCase()}</span><h2 id="product-title">${esc(p.name)}</h2><div class="product-byline"><span>DESIGN</span>${p.designer_url ? `<a href="${esc(p.designer_url)}" target="_blank" rel="noopener">${esc(p.designer)}</a>` : esc(p.designer || 'Uultis')}</div><div class="product-description">${p.description.split(/\n\s*\n/).map(par => `<p>${esc(par)}</p>`).join('')}</div><dl class="product-meta"><div><dt>CATEGORIA</dt><dd>${esc(p.category)}</dd></div>${p.year ? `<div><dt>ANO</dt><dd>${esc(p.year)}</dd></div>` : ''}</dl>${p.availability_note ? `<p class="product-category-label">Edição de colecionador · Unidades já comercializadas, conforme descrição da marca.</p>` : ''}<div class="product-actions"><a class="outline-button" href="https://www.uultis.com/onde-encontrar" target="_blank" rel="noopener">${p.availability_note ? 'Conheça os pontos de venda' : 'Encontre uma loja'} ${icon('diagonal')}</a>${favoriteButton(p)}</div><a class="product-source" href="${esc(p.url)}" target="_blank" rel="noopener">Ver ${esc(p.name)} no site Uultis ${icon('diagonal')}</a>${projectResources(p,resources)}</div></div>`;
+    $('#product-content').innerHTML = `<div class="product-content-layout"><div class="product-gallery">${galleryTabs}<div id="product-photo-panel" class="product-photo-panel"${hasModels ? ' role="tabpanel" aria-labelledby="product-tab-photos" tabindex="0"' : ''}><div class="product-main-image"><img id="product-main-img" src="${esc(pics[0])}" alt="${esc(p.name)} — ${esc(p.category)} Uultis" width="1400" height="1400"></div><div class="product-gallery-label"><span>DESIGN IN EVERY DETAIL</span><span id="product-image-index">01 / ${String(pics.length).padStart(2,'0')}</span></div>${pics.length > 1 ? `<div class="product-thumbnails" role="group" aria-label="Images of ${esc(p.name)}">${pics.map((src,i) => `<button class="${i === 0 ? 'active' : ''}" data-gallery-image="${i}" aria-label="View image ${i+1}" aria-pressed="${i === 0}"><img src="${esc(src)}" alt="" width="62" height="62"></button>`).join('')}</div>` : ''}</div>${modelPanel}</div><div class="product-detail"><span class="eyebrow">UULTIS / ${esc(p.category).toUpperCase()}</span><h2 id="product-title">${esc(p.name)}</h2><div class="product-byline"><span>DESIGN</span>${p.designer_url ? `<a href="${esc(p.designer_url)}" target="_blank" rel="noopener">${esc(p.designer)}</a>` : esc(p.designer || 'Uultis')}</div><div class="product-description">${p.description.split(/\n\s*\n/).map(par => `<p>${esc(par)}</p>`).join('')}</div><dl class="product-meta"><div><dt>CATEGORY</dt><dd>${esc(p.category)}</dd></div>${p.year ? `<div><dt>YEAR</dt><dd>${esc(p.year)}</dd></div>` : ''}</dl>${p.availability_note ? `<p class="product-category-label">${esc(p.availability_note)}</p>` : ''}<div class="product-actions"><a class="outline-button" href="https://www.uultis.com/onde-encontrar" target="_blank" rel="noopener">${p.availability_note ? 'Explore our stores' : 'Find a store'} ${icon('diagonal')}</a>${favoriteButton(p)}</div><a class="product-source" href="${esc(p.url)}" target="_blank" rel="noopener">View ${esc(p.name)} on the Uultis website ${icon('diagonal')}</a>${nativeStudy}${projectResources(p,resources)}</div></div>`;
     openDialog(productDialog);
     productDialog.scrollTop = 0;
     document.title = `${p.name} — ${p.category} | Uultis`;
   }
 
   function closeProduct() {
-    if (location.hash.startsWith('#produto/')) history.replaceState(null,'',baseHash);
+    if (location.hash.startsWith('#product/')) history.replaceState(null,'',baseHash);
     closeDialog(productDialog);
     activeProductId = null;
-    document.title = state.view === 'catalog' ? 'Coleção — Uultis' : 'Uultis — Expressões de vida';
+    document.title = state.view === 'catalog' ? 'Collection — Uultis' : 'Uultis — Expressions of life';
     if (lastFocus?.isConnected) lastFocus.focus({preventScroll:true});
   }
 
@@ -253,26 +260,27 @@
     catalogView.hidden = false;
     $('#site-header').classList.add('solid');
     if (mode === 'favorites') {
-      $('#catalog-title').innerHTML = 'O seu olhar.<br>A sua <em>seleção.</em>';
-      $('#catalog-eyebrow').textContent = 'PEÇAS QUE CONVERSAM COM VOCÊ';
-      $('#catalog-description').textContent = 'Suas peças favoritas, guardadas neste dispositivo.';
+      $('#catalog-title').innerHTML = 'Your perspective.<br>Your <em>selection.</em>';
+      $('#catalog-eyebrow').textContent = 'PIECES THAT SPEAK TO YOU';
+      $('#catalog-description').textContent = 'Your favorite pieces, saved on this device.';
     } else if (mode === 'simbiose') {
       $('#catalog-title').innerHTML = 'Simbiose.<br><em>2026.</em>';
-      $('#catalog-eyebrow').textContent = 'A MATÉRIA ENCONTRA NOVAS EXPRESSÕES';
-      $('#catalog-description').textContent = 'Explore os encontros da coleção Simbiose.';
+      $('#catalog-eyebrow').textContent = 'MATERIAL FINDS NEW EXPRESSIONS';
+      $('#catalog-description').textContent = 'Explore the connections within the Simbiose collection.';
     } else {
-      $('#catalog-title').innerHTML = 'Todas as formas<br>de <em>sentir.</em>';
-      $('#catalog-eyebrow').textContent = 'DESIGN AUTORAL BRASILEIRO';
-      $('#catalog-description').textContent = 'Encontre a peça que conversa com o seu espaço.';
+      $('#catalog-title').innerHTML = 'Every way<br>to <em>feel.</em>';
+      $('#catalog-eyebrow').textContent = 'ORIGINAL BRAZILIAN DESIGN';
+      $('#catalog-description').textContent = 'Find the piece that speaks to your space.';
     }
     renderCatalog();
-    document.title = mode === 'favorites' ? 'Minha seleção — Uultis' : mode === 'simbiose' ? 'Simbiose 2026 — Uultis' : 'Coleção — Uultis';
+    document.title = mode === 'favorites' ? 'My selection — Uultis' : mode === 'simbiose' ? 'Simbiose 2026 — Uultis' : 'Collection — Uultis';
     return isDifferent;
   }
 
   function route(initial = false) {
-    const hash = location.hash || '#inicio';
-    if (hash.startsWith('#produto/')) {
+    const hash = canonicalHash(location.hash || '#home');
+    if (location.hash && hash !== location.hash) history.replaceState(null,'',hash);
+    if (hash.startsWith('#product/')) {
       closeDialog(menuDialog);
       closeDialog(searchDialog);
       openProduct(decodeURIComponent(hash.slice(9)));
@@ -287,7 +295,7 @@
     }
     closeDialog(menuDialog);
     baseHash = hash;
-    const mode = hash === '#favoritos' ? 'favorites' : hash === '#simbiose' ? 'simbiose' : hash === '#colecao' ? 'all' : null;
+    const mode = hash === '#favorites' ? 'favorites' : hash === '#simbiose' ? 'simbiose' : hash === '#collection' ? 'all' : null;
     if (mode) {
       openCatalog(mode);
       if (!wasProduct) window.scrollTo({top:0,behavior:'instant'});
@@ -296,9 +304,9 @@
       catalogView.hidden = true;
       homeView.hidden = false;
       $('#site-header').classList.remove('solid');
-      document.title = 'Uultis — Expressões de vida';
+      document.title = 'Uultis — Expressions of life';
       if (!wasProduct) {
-        const target = document.getElementById(hash.slice(1)) || $('#inicio');
+        const target = document.getElementById(hash.slice(1)) || $('#home');
         requestAnimationFrame(() => target.scrollIntoView({behavior:initial || reducedMotion.matches ? 'instant' : 'smooth',block:'start'}));
       }
       observeReveals();
@@ -308,8 +316,8 @@
 
   function renderSearch(query = '') {
     const matches = ordered(products.filter(p => matchesQuery(p,query)));
-    $('#search-summary').textContent = query.trim() ? `${matches.length} ${matches.length === 1 ? 'peça encontrada' : 'peças encontradas'}. Pressione Enter para explorar todos os resultados.` : 'Algumas peças para começar a descobrir.';
-    $('#search-results').innerHTML = matches.slice(0,8).map(p => `<a href="#produto/${esc(p.id)}" class="search-result"><img src="${esc(p.thumbnail || p.image)}" alt="${esc(p.name)}" width="92" height="92" loading="lazy"><div>${esc(p.name)}<span>${esc(p.category)}</span></div></a>`).join('') || '<p class="search-summary">Experimente um nome, um designer ou uma categoria diferente.</p>';
+    $('#search-summary').textContent = query.trim() ? `${matches.length} ${matches.length === 1 ? 'piece found' : 'pieces found'}. Press Enter to explore all results.` : 'A few pieces to begin your discovery.';
+    $('#search-results').innerHTML = matches.slice(0,8).map(p => `<a href="#product/${esc(p.id)}" class="search-result"><img src="${esc(p.thumbnail || p.image)}" alt="${esc(p.name)}" width="92" height="92" loading="lazy"><div>${esc(p.name)}<span>${esc(p.category)}</span></div></a>`).join('') || '<p class="search-summary">Try a different name, designer or category.</p>';
   }
 
   function showSearch() {
@@ -326,8 +334,8 @@
     state.category = '';
     state.limit = 24;
     openCatalog('all',true);
-    baseHash = '#colecao';
-    history.pushState(null,'','#colecao');
+    baseHash = '#collection';
+    history.pushState(null,'','#collection');
     window.scrollTo({top:0,behavior:'instant'});
   }
 
@@ -387,7 +395,7 @@
       const wasSelected = favorites.has(id);
       wasSelected ? favorites.delete(id) : favorites.add(id);
       updateFavorites();
-      announce(`${byId.get(id)?.name || 'Peça'} ${wasSelected ? 'removida da' : 'adicionada à'} sua seleção.`);
+      announce(`${byId.get(id)?.name || 'Piece'} ${wasSelected ? 'removed from' : 'added to'} your selection.`);
       if (state.view === 'catalog' && state.mode === 'favorites') renderCatalog();
       return;
     }
@@ -417,9 +425,9 @@
     const internal = event.target.closest('a[href^="#"]');
     if (internal) {
       const href = internal.getAttribute('href');
-      if (href === '#conteudo') { event.preventDefault(); $('#conteudo').focus({preventScroll:true}); $('#conteudo').scrollIntoView({behavior:'instant'}); return; }
-      if (href.startsWith('#produto/') && !location.hash.startsWith('#produto/')) baseHash = location.hash || '#inicio';
-      if (href === location.hash || (href === '#inicio' && !location.hash)) { event.preventDefault(); route(); }
+      if (href === '#content') { event.preventDefault(); $('#content').focus({preventScroll:true}); $('#content').scrollIntoView({behavior:'instant'}); return; }
+      if (href.startsWith('#product/') && !location.hash.startsWith('#product/')) baseHash = location.hash || '#home';
+      if (href === location.hash || (href === '#home' && !location.hash)) { event.preventDefault(); route(); }
       if (menuDialog.open) closeDialog(menuDialog);
     }
   });
@@ -441,11 +449,11 @@
   $('#catalog-sort').addEventListener('change',event => { state.sort = event.target.value; state.limit = 24; renderCatalog(); });
   $('#load-more').addEventListener('click',() => { state.limit += 24; renderCatalog(true); });
   $('#clear-filters').addEventListener('click',() => {
-    if (state.mode === 'favorites' && !favorites.size) { location.hash = '#colecao'; return; }
+    if (state.mode === 'favorites' && !favorites.size) { location.hash = '#collection'; return; }
     state.category = ''; state.query = ''; state.limit = 24; renderCatalog();
   });
   $('#open-film').addEventListener('click',() => {
-    $('#film-player').innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/UgiDXOVckDc?autoplay=1&rel=0" title="Filme institucional Uultis" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    $('#film-player').innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/UgiDXOVckDc?autoplay=1&rel=0" title="Uultis brand film" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
     openDialog(filmDialog);
   });
   $$('dialog').forEach(dialog => {
@@ -457,10 +465,10 @@
     dialog.addEventListener('close',() => {
       if (dialog === filmDialog) $('#film-player').innerHTML = '';
       if (dialog === productDialog) stopProductViewer();
-      if (dialog === productDialog && !closingForRoute && location.hash.startsWith('#produto/')) {
+      if (dialog === productDialog && !closingForRoute && location.hash.startsWith('#product/')) {
         history.replaceState(null,'',baseHash);
         activeProductId = null;
-        document.title = state.view === 'catalog' ? 'Coleção — Uultis' : 'Uultis — Expressões de vida';
+        document.title = state.view === 'catalog' ? 'Collection — Uultis' : 'Uultis — Expressions of life';
       }
       syncDialogState();
     });
@@ -481,7 +489,7 @@
       img.dataset.failed = 'true';
       img.src = 'assets/logo-black.svg';
       img.classList.add('image-missing');
-      img.alt = 'Imagem indisponível. Consulte a página original da peça.';
+      img.alt = 'Image unavailable. Visit the original product page.';
     }
   },true);
   window.addEventListener('hashchange',() => route());
@@ -492,9 +500,9 @@
   // Keep motion progressive: complete content is visible if JavaScript is unavailable.
   if (!reducedMotion.matches) document.documentElement.classList.add('js-motion');
   $('#current-year').textContent = String(new Date().getFullYear());
-  const chips = [['','Todos'],['Poltronas','Poltronas'],['Sofás','Sofás'],['Cadeiras','Cadeiras'],['Mesas','Mesas'],['Sense Outdoor','Outdoor']];
+  const chips = [['','All'],['Armchairs','Armchairs'],['Sofas','Sofas'],['Chairs','Chairs'],['Tables','Tables'],['Sense Outdoor','Outdoor']];
   $('#filter-chips').innerHTML = chips.map(([value,label]) => `<button data-category="${esc(value)}" aria-pressed="${!value}" class="${!value ? 'active' : ''}">${label}</button>`).join('');
-  const categories = [...new Set(products.map(p => p.category))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+  const categories = [...new Set(products.map(p => p.category))].sort((a,b) => a.localeCompare(b,'en-US'));
   $('#category-select').insertAdjacentHTML('beforeend',categories.map(category => `<option value="${esc(category)}">${esc(category)}</option>`).join(''));
   $('#inspiration-grid').innerHTML = (window.UULTIS_GALLERIES || []).map(gallery => `<a href="${esc(gallery.url)}" target="_blank" rel="noopener" class="inspiration-card reveal"><div class="inspiration-photo"><img src="${esc(gallery.image)}" alt="${esc(gallery.alt)}" loading="lazy" width="1600" height="1400"></div><div class="inspiration-caption"><div><h3>${esc(gallery.name)}</h3><p>${esc(gallery.credit)}</p></div>${icon('diagonal')}</div></a>`).join('');
   renderCuration();

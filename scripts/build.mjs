@@ -5,10 +5,10 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const source = join(projectRoot, 'dist');
 const output = join(projectRoot, 'public');
-const required = ['index.html', 'styles.css', 'app.js', 'branding/index.html', 'guia-de-estilo/index.html', 'assets/catalog.js'];
+const required = ['index.html', 'styles.css', 'app.js', 'branding/index.html', 'style-guide/index.html', 'assets/catalog.js', 'room-studio/index.html', 'room-studio/studio.js', 'room-studio/studio.css', 'assets/vendor/three.module.js', 'assets/vendor/three.core.js', 'assets/vendor/OrbitControls.js'];
 
 for (const path of required) {
-  if (!existsSync(join(source, path))) throw new Error(`Arquivo obrigatório ausente: dist/${path}`);
+  if (!existsSync(join(source, path))) throw new Error(`Required file missing: dist/${path}`);
 }
 
 // Only the generated publication directory is replaced; dist remains the source.
@@ -21,4 +21,4 @@ function countFiles(directory) {
     total + (entry.isDirectory() ? countFiles(join(directory, entry.name)) : 1), 0);
 }
 
-console.log(`Publicação preparada: ${countFiles(output)} arquivos em public/.`);
+console.log(`Publication prepared: ${countFiles(output)} files in public/.`);

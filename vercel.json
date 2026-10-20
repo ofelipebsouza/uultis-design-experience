@@ -4,5 +4,12 @@
   "buildCommand": "npm run build",
   "installCommand": "",
   "outputDirectory": "public",
-  "trailingSlash": true
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/guia-de-estilo/:path*",
+      "destination": "/style-guide/:path*",
+      "permanent": true
+    }
+  ]
 }

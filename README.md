@@ -1,49 +1,50 @@
-# Uultis — Expressões de vida
+# Uultis — Expressions of life
 
-Proposta de experiência digital para a Uultis, com apresentação editorial, catálogo interativo, direção de branding e guia de estilo. Produtos, descrições, imagens e destinos de contato foram extraídos das fontes oficiais da marca em 20 de outubro de 2026.
+A digital experience concept for Uultis, with an editorial presentation, an interactive product catalog, a Branding page and a Style Guide. Products, descriptions, images and contact destinations were collected from the brand’s official sources on October 20, 2026. English is the primary language throughout the published experience, including complete translations of all 213 product descriptions.
 
-**Código-fonte:** [ofelipebsouza/uultis-design-experience](https://github.com/ofelipebsouza/uultis-design-experience).
+**Source code:** [ofelipebsouza/uultis-design-experience](https://github.com/ofelipebsouza/uultis-design-experience).
 
-**Endereços do projeto na Vercel:**
+**Published pages:**
 
-- [Experiência principal](https://uultis-design-experience.vercel.app/)
+- [Main experience](https://uultis-design-experience.vercel.app/)
 - [Branding](https://uultis-design-experience.vercel.app/branding/)
-- [Guia de estilo](https://uultis-design-experience.vercel.app/guia-de-estilo/)
+- [Style Guide](https://uultis-design-experience.vercel.app/style-guide/)
 
-A configuração de produção usa o domínio `uultis-design-experience.vercel.app` e a branch `main` do repositório GitHub.
+Production uses the `uultis-design-experience.vercel.app` domain and the `main` branch of the GitHub repository.
 
-O projeto usa HTML, CSS e JavaScript estáticos e tem a Vercel como destino de publicação. Os arquivos-fonte estão em `dist/`. A preparação com Node.js 22 ou superior executa `npm run build` e copia esse conteúdo para `public/`, diretório servido pela Vercel. O script não depende de pacotes externos.
+The project uses static HTML, CSS and JavaScript, published on Vercel. Authoring files live in `dist/`. Running `npm run build` with Node.js 22 or later copies them to `public/`, the directory served by Vercel. The build has no external package dependencies.
 
-## Páginas
+## Pages
 
-| Caminho | Conteúdo |
+| Path | Content |
 | --- | --- |
-| `/` | Experiência editorial, materialidade, designers, ambientes e catálogo completo. |
-| `/branding/` | Direção criativa da proposta: essência, posicionamento, linguagem, aplicações e origem das referências. |
-| `/guia-de-estilo/` | Sistema visual: paleta, tipografia, espaçamento, componentes, apresentação de produtos, movimento e acessibilidade. |
+| `/` | Editorial experience, materials, designers, interiors and the complete product catalog. |
+| `/branding/` | Creative direction: essence, positioning, voice, applications and reference sources. |
+| `/style-guide/` | Visual system: palette, typography, spacing, components, product presentation, motion and accessibility. |
 
-As páginas de branding e guia de estilo têm estrutura própria e compartilham os assets da proposta. Os links para elas estão no rodapé da página principal.
+Branding and Style Guide have their own page structures and share the project’s assets. Both are linked from the main footer. The former `/guia-de-estilo/` address redirects permanently to `/style-guide/` on Vercel.
 
-## Catálogo e experiência
+## Catalog and experience
 
-- 213 produtos em 21 categorias, com descrições oficiais completas em português.
-- Busca por peça, designer, categoria e termos da descrição; filtros e ordenação.
-- Detalhes e galeria de cada peça, com vídeos oficiais quando disponíveis.
-- 356 fichas técnicas oficiais: 214 documentos em português, 141 em inglês e 1 em espanhol. Todos os 213 produtos têm ao menos uma ficha em português.
-- 203 produtos com acesso a recursos 3D e de modelagem nas fontes oficiais: 195 links diretos para modelos no SketchUp 3D Warehouse, 7 links de busca na organização da Uultis e 92 links para Casoca. Há produtos presentes em mais de uma fonte.
-- Favoritos armazenados no dispositivo do visitante com `localStorage`.
-- Coleção Simbiose 2026 selecionada pela tag oficial exata, com 38 peças.
-- Rolagem nativa, capítulos de materialidade e movimento adaptado à preferência de redução de animações do sistema.
-- Projetos oficiais Casa D|A / Niva ARQ e Dafne Beauty House / Paula Ambrósio.
-- Lojas, contatos, designers e conteúdo institucional conectados aos canais oficiais da Uultis.
+- 213 products in 21 categories, with complete English translations of the official product descriptions.
+- Product and designer names remain unchanged, including accents and proper collection names such as Simbiose 2026.
+- Search by product, designer, category and description terms, with filters and sorting.
+- Product details and photo galleries, with official product videos when available.
+- 356 official technical sheets: 141 English, 214 Portuguese and 1 Spanish. Every product has at least one Portuguese sheet. English sheets appear first when available; original documents remain accessible with their language clearly labeled.
+- 203 products with access to official 3D and modeling resources: 195 direct SketchUp 3D Warehouse model links, 7 searches within the Uultis organization and 92 Casoca links. Some products are available through more than one provider.
+- Favorites saved on the visitor’s device through `localStorage`.
+- 38 products in Simbiose 2026, selected using the exact official collection tag.
+- Native scrolling, material chapters and motion that respects the system’s reduced-motion preference.
+- Official projects Casa D|A / Niva ARQ and Dafne Beauty House / Paula Ambrósio.
+- Stores, contact options, designers and institutional content connected to official Uultis channels.
 
-O acesso aos modelos 3D usa os destinos oficiais do SketchUp 3D Warehouse e da Casoca. A visualização e os downloads são oferecidos por esses serviços, conforme os recursos disponíveis em cada destino.
+The 3D resources open the official SketchUp 3D Warehouse and Casoca destinations in a new tab. Viewing and downloads are provided by those services according to what is available at each destination. A product without a published 3D resource does not display an empty 3D tab.
 
-A navegação do catálogo usa fragmentos de URL, como `/#colecao` e `/#produto/274`. As páginas de apresentação usam diretórios reais e não dependem de um redirecionamento global para a home.
+Catalog navigation uses English URL fragments such as `/#collection`, `/#favorites` and `/#product/274`. Previous Portuguese fragments remain supported and resolve to the equivalent English fragment. Presentation pages use real directories and do not depend on a catch-all rewrite to the homepage.
 
-## Executar localmente
+## Run locally
 
-Requisitos: Node.js 22 ou superior, com npm, para preparar o pacote; Python 3 para servir os arquivos localmente por HTTP.
+Requirements: Node.js 22 or later with npm to prepare the publication package; Python 3 to serve it locally over HTTP.
 
 ```bash
 git clone https://github.com/ofelipebsouza/uultis-design-experience.git
@@ -52,92 +53,110 @@ npm run build
 python3 -m http.server 8080 --directory public
 ```
 
-Abrir:
+Open:
 
-- [Experiência principal](http://localhost:8080/)
+- [Main experience](http://localhost:8080/)
 - [Branding](http://localhost:8080/branding/)
-- [Guia de estilo](http://localhost:8080/guia-de-estilo/)
+- [Style Guide](http://localhost:8080/style-guide/)
 
-Após alterar arquivos em `dist/`, executar novamente `npm run build` para atualizar `public/`. Não é necessário instalar dependências. Para encerrar o servidor, pressionar `Ctrl+C` no terminal.
+After editing files in `dist/`, run `npm run build` again to refresh `public/`. No dependency installation is needed. Stop the server with `Ctrl+C` in the terminal. Vercel’s configured redirects are applied in deployment; Python’s simple HTTP server only serves the generated files.
 
-## Estrutura
+## Structure
 
-| Arquivo ou diretório | Responsabilidade |
+| File or directory | Responsibility |
 | --- | --- |
-| `dist/index.html` | Estrutura e conteúdo da experiência principal. |
-| `dist/styles.css` | Composição, responsividade e animações da página principal. |
-| `dist/app.js` | Navegação, busca, catálogo, favoritos e diálogos. |
-| `dist/branding/index.html` | Apresentação da direção de branding. |
-| `dist/guia-de-estilo/index.html` | Guia de estilo e componentes da proposta. |
-| `dist/assets/catalog.json` | Dados estruturados dos produtos. |
-| `dist/assets/catalog.js` | Os mesmos dados disponibilizados ao navegador em `window.UULTIS_PRODUCTS`. |
-| `dist/assets/editorial.js` | Imagens, créditos e links dos projetos apresentados. |
-| `dist/assets/` | Wordmarks, fontes de licença aberta e suas licenças, imagens de produtos e fotografias editoriais. |
-| `package.json` | Comando de preparação e requisito de Node.js. |
-| `scripts/build.mjs` | Copia o conteúdo de `dist/` para `public/`. |
-| `public/` | Saída gerada para publicação; manter alterações nas fontes em `dist/`. |
-| `vercel.json` | Configuração de preparação e publicação na Vercel. |
-| `.gitignore` e `.vercelignore` | Exclusão de arquivos locais e seleção dos arquivos de hospedagem. |
+| `dist/index.html` | Structure and content of the main experience. |
+| `dist/styles.css` | Layout, responsive behavior and motion for the main page. |
+| `dist/app.js` | Navigation, search, catalog, favorites and dialogs. |
+| `dist/branding/index.html` | Branding direction presentation. |
+| `dist/style-guide/index.html` | Style Guide and interactive component examples. |
+| `dist/assets/catalog.json` | Structured product data in English. |
+| `dist/assets/catalog.js` | The same product data exposed to the browser as `window.UULTIS_PRODUCTS`. |
+| `dist/assets/editorial.js` | Featured project images, credits, alternative text and links. |
+| `dist/assets/` | Wordmarks, openly licensed fonts and their licenses, product images and editorial photographs. |
+| `package.json` | Build command and Node.js requirement. |
+| `scripts/build.mjs` | Copies `dist/` into `public/`. |
+| `public/` | Generated publication output; make source changes in `dist/`. |
+| `vercel.json` | Vercel build, deployment and legacy URL redirect configuration. |
+| `.gitignore` and `.vercelignore` | Local file exclusions and deployment file selection. |
 
-## Publicação na Vercel
+## Vercel publication
 
-O projeto `uultis-design-experience` na Vercel está conectado ao repositório GitHub `ofelipebsouza/uultis-design-experience`. A branch de produção é `main`, e a raiz do repositório é o Root Directory. Pela integração Git, os commits enviados a `main` acionam novos deploys de produção. Consultar o resultado de cada deploy na Vercel para confirmar a publicação de uma alteração.
+The Vercel project `uultis-design-experience` is connected to the GitHub repository `ofelipebsouza/uultis-design-experience`. The production branch is `main`, and Root Directory is the repository root. Through the Git integration, commits pushed to `main` trigger production deployments. Check each deployment’s result in Vercel to confirm that a change has been published successfully.
 
-O arquivo `vercel.json` define:
+`vercel.json` defines:
 
 - Framework: Other (`null`).
 - Build Command: `npm run build`.
-- Install Command: vazio; não há dependências externas.
+- Install Command: empty; there are no external dependencies.
 - Output Directory: `public`.
-- URLs de páginas com barra final (`trailingSlash: true`).
+- Trailing slashes on page URLs (`trailingSlash: true`).
+- A permanent redirect from `/guia-de-estilo/:path*` to `/style-guide/:path*`.
 
-A Vercel executa o script `scripts/build.mjs` por meio de `npm run build`, usando Node.js 22 ou superior. Essa etapa prepara a saída de publicação ao copiar os arquivos estáticos de `dist/` para `public/`; não exige compilação de framework nem instalação de dependências. As rotas `/`, `/branding/` e `/guia-de-estilo/` são servidas a partir da estrutura de diretórios copiada.
+Vercel runs `scripts/build.mjs` through `npm run build`, using Node.js 22 or later. This step prepares publication output by copying static files from `dist/` into `public/`; it requires neither framework compilation nor dependency installation. The `/`, `/branding/` and `/style-guide/` routes are served from that directory structure.
 
-A origem definida é `https://uultis-design-experience.vercel.app`. Os metadados `canonical`, `og:url` e `og:image` das três páginas usam esse domínio, com canonical próprio para cada rota. A proposta preserva `noindex, nofollow`.
+The configured origin is `https://uultis-design-experience.vercel.app`. All three pages use this domain in their canonical, `og:url` and `og:image` metadata, with a distinct canonical URL for each route. English is declared in document language and social metadata. The concept retains `noindex, nofollow`.
 
-## Manutenção
+## Maintenance
 
-### Produtos
+### Products and language
 
-Ao alterar um produto, manter `catalog.json` e `catalog.js` sincronizados. Preservar os IDs como strings, os nomes e descrições oficiais e a correspondência exata entre a peça e suas fotografias.
+Keep `catalog.json` and `catalog.js` synchronized whenever a product changes. Keep IDs as strings and preserve official names, the complete meaning of descriptions, and the exact correspondence between a product and its photographs.
 
-- `thumbnail` e `image` apontam para imagens locais.
-- `display_images` contém a galeria local usada na interface.
-- `url`, `designer_url` e `specs` preservam os destinos oficiais.
-- `availability_note`, quando presente, deve continuar visível na apresentação da peça.
+- `description`, `category`, tag labels, resource labels and availability notes are presented in English.
+- `thumbnail` and `image` point to local images.
+- `display_images` contains the local gallery used by the interface.
+- `url`, `designer_url`, tag URLs and `specs` preserve official destinations.
+- `specs[].language` identifies the actual language of the original document. Translating the interface must not relabel a Portuguese PDF as English.
+- Every technical sheet remains available, including multiple versions in the same language.
+- `availability_note`, when present, remains visible in the product details.
 
-### Assets e conteúdo editorial
+The original external websites, video audio and PDF contents are provided by their respective publishers. Product translations do not imply that those third-party destinations are English-only.
 
-A publicação utiliza versões WebP otimizadas das fotografias e imagens de produtos. As cópias publicadas foram preparadas sem metadados EXIF; os JPGs originais sem uso na interface foram retirados deste repositório de publicação. Os arquivos originais e seus registros de procedência permanecem no pacote de extração entregue separadamente.
+### Assets and editorial content
 
-Ao substituir uma imagem, gerar sua versão otimizada, preservar a identidade visual da peça e atualizar os caminhos que a utilizam. Atualizar os créditos e links em `editorial.js` ao trocar projetos.
+Publication uses optimized WebP versions of the photographs and product imagery. Published copies were prepared without EXIF metadata; unused original JPGs were excluded from this publication repository. Original files and their provenance records remain in the separately delivered extraction package.
 
-### Identidade
+When replacing an image, generate an optimized version, preserve the product’s visual identity and update the paths that reference it. Update credits, alternative text and links in `editorial.js` when changing featured projects.
 
-Ao modificar cores, fontes, componentes ou movimento, atualizar também o guia de estilo. A página de branding registra a intenção criativa e deve acompanhar mudanças de posicionamento da proposta.
+### Identity
 
-O wordmark Uultis é preservado como referência da marca. Athelas Regular e SuisseIntl Light/Medium são referências tipográficas observadas no site original; os arquivos dessas famílias não são redistribuídos neste repositório. A versão pública utiliza Inter na interface e Libre Baskerville nos destaques editoriais. Os fundos quentes e neutros, a composição e a escolha tipográfica pública fazem parte desta proposta digital. O material não constitui um manual oficial aprovado pela Uultis.
+When changing colors, fonts, components or motion, update the Style Guide as well. The Branding page records the creative intent and should reflect changes to the concept’s positioning.
 
-### Tipografia pública e licenças
+The Uultis wordmark is preserved as a reference to the brand. Athelas Regular and SuisseIntl Light/Medium are typographic references observed on the original website; their font files are not redistributed in this repository. The public version uses Inter for the interface and Libre Baskerville for editorial emphasis. Warm neutral backgrounds, composition and the public typography belong to this digital concept. This material is not an official brand manual approved by Uultis.
 
-Inter e Libre Baskerville são distribuídas sob a SIL Open Font License (OFL). A versão pública inclui os arquivos tipográficos e os respectivos textos de licença:
+### Public typography and licenses
 
-| Arquivo | Uso |
+Inter and Libre Baskerville are distributed under the SIL Open Font License (OFL). The public version includes the font files and their license texts:
+
+| File | Use |
 | --- | --- |
-| `dist/assets/Inter-Variable.ttf` | Interface, navegação, textos e hierarquia sem serifa. |
-| `dist/assets/LibreBaskerville-Variable.ttf` | Destaques editoriais com serifa. |
-| `dist/assets/LibreBaskerville-Italic.ttf` | Ênfases editoriais em itálico. |
-| `dist/assets/OFL-Inter.txt` | Licença da família Inter. |
-| `dist/assets/OFL-LibreBaskerville.txt` | Licença da família Libre Baskerville. |
+| `dist/assets/Inter-Variable.ttf` | Interface, navigation, body copy and sans-serif hierarchy. |
+| `dist/assets/LibreBaskerville-Variable.ttf` | Serif editorial headings. |
+| `dist/assets/LibreBaskerville-Italic.ttf` | Italic editorial emphasis. |
+| `dist/assets/OFL-Inter.txt` | Inter font license. |
+| `dist/assets/OFL-LibreBaskerville.txt` | Libre Baskerville font license. |
 
-Manter os textos de licença junto aos arquivos ao redistribuir esta versão. As referências Athelas e SuisseIntl documentam a pesquisa da identidade original; a implementação pública usa somente as famílias de licença aberta listadas acima.
+Keep the license texts with the font files when redistributing this version. References to Athelas and SuisseIntl document the original identity research; the public implementation uses only the openly licensed families listed above.
 
-### Conferência antes de publicar
+### Checks before publishing
 
-Conferir a home, as duas páginas de apresentação, busca, filtros, favoritos, detalhes de produto e links oficiais. Verificar a navegação em desktop e mobile, a preferência por movimento reduzido e a existência dos arquivos citados no catálogo.
+Check the homepage, both presentation pages, search, filters, favorites, product details and official resource links. Verify desktop and mobile navigation, the reduced-motion preference, English technical-sheet ordering, legacy URL compatibility and the existence of catalog assets.
 
-## Escopo e fontes
+## Scope and sources
 
-Esta é uma proposta de apresentação e descoberta de produtos. Os links comerciais e de contato direcionam aos canais oficiais; o filme institucional abre um player externo após ação do visitante. O projeto não inclui checkout, cadastro de clientes ou processamento de pedidos.
+This is a product presentation and discovery concept. Commercial and contact links lead to official channels; the brand film opens an external player after the visitor acts. The project does not include checkout, customer registration or order processing.
 
-Fontes principais: [Uultis](https://www.uultis.com/) e [Uultis USA](https://usa.uultis.com/). Marca, fotografias, desenhos, descrições e produtos pertencem aos seus respectivos titulares.
+Primary sources: [Uultis](https://www.uultis.com/) and [Uultis USA](https://usa.uultis.com/). The brand, photographs, designs, descriptions and products belong to their respective owners.
+
+
+## Native Room Studio
+
+`/room-studio/` is a self-hosted, interactive WebGL interior for **Star (290)** and **Talha (291)**. Direct selection: `/room-studio/?product=290` or `?product=291`. Entry points appear in the main navigation, homepage, footer and both product detail dialogs.
+
+- Mouse/touch orbit, wheel/pinch zoom, keyboard arrows and +/-; explicit Detail, Room and Reset views.
+- Star: 1.40 or 1.60 m diameter, 0.745 m overall height. Talha: 0.30 m diameter, 0.465 or 0.565 m overall height. Dimensions transcribed from the official MH-9153 and MH-9137/MH-9138 technical sheets.
+- Parametric meshes approximate the original silhouettes; these are **design studies, not manufacturer CAD models**. Three illustrative wood studies and two room palettes do not assert commercial availability. Generic contextual furniture is not part of the product catalog.
+- Local Three.js r180 / 0.180.0 and OrbitControls, MIT license included in `dist/assets/vendor/THREE-LICENSE.txt`. No runtime CDN or modeling-service login required. Render-on-demand, capped pixel ratio and context-loss fallback keep the demo lightweight.
+- Geometry is authored in `dist/room-studio/studio.js`. No Blender or SketchUp runtime is needed. Official SketchUp/Casoca links and all technical sheets remain in the catalog.
+- Model and library imports are isolated to the studio page, so the homepage does not load the 3D renderer.
