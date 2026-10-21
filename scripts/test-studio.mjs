@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { register } from 'node:module';
 register('./three-loader.mjs',import.meta.url);
 const THREE=await import('../dist/assets/vendor/three.module.js');
@@ -6,8 +7,14 @@ const {PRODUCTS,PRODUCT_IDS,buildModel,disposeModel}=await import('../dist/room-
 const {readState,stateQuery}=await import('../dist/room-studio/state.js');
 const {createRoom}=await import('../dist/room-studio/room.js');
 const material=new THREE.MeshStandardMaterial();const materials=Object.fromEntries(['wood','top','metal','darkMetal','glass','stone','fabric','seam'].map(k=>[k,material]));
+const {RESOURCES}=await import('../dist/room-studio/resources.js');
+const picker=readFileSync(new URL('../dist/room-studio/index.html',import.meta.url),'utf8');
+assert.deepEqual(Object.keys(PRODUCTS).sort(),[...PRODUCT_IDS].sort());
 let variants=0,maxTriangles=0,maxMeshes=0;
 for(const id of PRODUCT_IDS)for(const v of PRODUCTS[id].variants){
+ assert.ok(picker.includes(`data-product="${id}"`),`${id} picker missing`);
+ assert.ok(RESOURCES[id]?.spec.startsWith('/technical-sheets/'),`${id} local technical sheet missing`);
+ const linked=readState(`?product=${id}&variant=${v.key}`,PRODUCTS);assert.equal(linked.product,id);assert.equal(linked.variant,v.key);assert.deepEqual(readState('?'+stateQuery(linked),PRODUCTS),linked);
  const model=buildModel(id,v,materials);const bounds=new THREE.Box3().setFromObject(model);const size=bounds.getSize(new THREE.Vector3());
  for(const [axis,value]of [['x',v.w],['y',v.h],['z',v.d]])assert.ok(Math.abs(size[axis]-value)<1e-6,`${id} ${axis} dimensions`);
  assert.ok(Math.abs(bounds.min.y)<1e-6,'Ground contact');let triangles=0,meshes=0,disposed=0;const geometries=new Set();

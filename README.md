@@ -152,7 +152,7 @@ Primary sources: [Uultis](https://www.uultis.com/) and [Uultis USA](https://usa.
 
 ## Native Room Studio
 
-`/room-studio/` contains six self-hosted furniture studies: Star (290), Talha (291), Sintonia (289), Like (82), Grain (64) and New (100). All six product details link directly to the studio. Official SketchUp/Casoca links remain available in the catalog.
+`/room-studio/` contains ten self-hosted furniture studies: Star (290), Talha (291), Sintonia (289), Like (82), Grain (64) New (100), Trapézio (134), Arc (12), Li (80) and Plot (211). All ten product details link directly to the studio. Official SketchUp/Casoca links remain available in the catalog.
 
 - Ten size/proportion variants; orbit, zoom, keyboard controls, detail/room/top views, isolated object stage, two room palettes, three lighting presets, placement along two axes, rotation, dimensions, optional auto orbit, fullscreen, PNG capture and shareable configuration URLs.
 - Three illustrative wood studies and three textiles for upholstered pieces. Rounded upholstery, seams, fluted wood, curved steel, bump textures, amber glass and environment reflections add detail without downloaded model files. Materials are illustrative, not a claim of commercial availability.
@@ -161,7 +161,7 @@ Primary sources: [Uultis](https://www.uultis.com/) and [Uultis USA](https://usa.
 - Geometry and metadata: `dist/room-studio/products.js`. Renderer and materials: `renderer.js`; context room: `room.js`; UI: `studio.js`; validated share state: `state.js`.
 - Local Three.js r180 / 0.180.0, OrbitControls, RoundedBoxGeometry and RoomEnvironment; MIT license in `dist/assets/vendor/THREE-LICENSE.txt`. No runtime CDN or modeling-service login. The homepage does not load the renderer.
 - Render on demand; optional orbit capped near 30 fps and paused while hidden. MSAA is requested on every device, including mobile. Balanced mode caps pixel ratio at 1.5 on coarse pointers / Save Data and 2 on desktop, with a 3 MP render budget. High mode allows 2.5 with a 5 MP cap and finer 4096 px shadows, subject to hardware limits. Mobile retains lightweight transparent glass. One product model is mounted at a time, with geometry disposal on switching. Textures and environment are generated once locally. No heavy HDR files.
-- No-WebGL/context-loss mode keeps all six product choices, size variants, photographs, sharing and technical sheets usable. Only 3D controls are disabled.
+- No-WebGL/context-loss mode keeps all ten product choices, size variants, photographs, sharing and technical sheets usable. Only 3D controls are disabled.
 
 Validation: `node scripts/test-studio.mjs` verifies all 10 variants, finite vertices, exact declared bounding dimensions, geometry disposal, triangle/mesh budgets and share-state validation. Largest refined product: 12,000 triangles / 16 meshes; context room: 16,228 triangles. These are geometry budgets, not measured device frame rates. `npm run build` validates required files and prepares `public/`.
 
@@ -177,3 +177,9 @@ Technical-sheet links open `/technical-sheets/?product=…&file=…`, where vers
 `python scripts/generate-pages.py` regenerates the editorial/designers/directory pages from the local catalog and `scripts/directory-data.json`. `python scripts/test-navigation.py` checks local destinations, all 213 catalog entries, document route coverage and absence of old-domain navigation. The contact form prepares a mailto draft; it does not submit a form or collect leads on a server.
 
 The studio now includes finer curved geometry, the Star radial veneer texture, Talha support thickness, rounded Sintonia glass corners, sculpted Grain upholstery and fuller New cushions. PBR grain/weave maps, restrained exposure, contact shading, lower shadow bias and selectable render quality improve detail and edge quality. Product photography and the catalog description are available in a reference panel. Models remain approximate studies; only the previously verified overall dimensions are described as verified. GPU appearance still requires confirmation on a WebGL-capable device because the cloud test browser has GPU rendering disabled.
+
+## Journal and link hub
+
+`/blog/` includes three original editorial guides with individual article routes. `/biolink/` is a mobile-first link hub for the collection, studio, journal, showrooms, contact, branding and style guide. Run `python scripts/generate-journal.py` to regenerate these pages and the shared editorial destinations. No CMS or external blogging service is required.
+
+The four additional studio products use approximate, explicitly labelled study proportions, based on catalog photographs. Arc uses an environment-reflective material (not a planar room reflection), Li has a steel frame, Plot uses a cutout weave map under a clear glass study, and Trapézio supports fabric choices. Each remains within the existing 20,000-triangle / 30-mesh budget.

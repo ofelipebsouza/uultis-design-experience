@@ -19,6 +19,10 @@ export function createStudio(viewport,onLost){
  const maps=createTextures(renderer),grain=maps.grain,weave=maps.weave;
  const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.6,...extra});
  const m={wood:mat(FINISHES.oak[0],{map:maps.wood,bumpMap:grain,bumpScale:.00065,roughness:.46}),top:mat(FINISHES.oak[0],{map:maps.wood,bumpMap:grain,bumpScale:.00035,roughness:.4}),radial:mat(FINISHES.oak[0],{map:maps.radial,bumpMap:grain,bumpScale:.00025,roughness:.4}),metal:mat('#c4b294',{metalness:.78,roughness:.4,side:THREE.DoubleSide}),darkMetal:mat('#68635a',{metalness:.8,roughness:.35}),glass:new THREE.MeshPhysicalMaterial({color:'#c79f68',bumpMap:maps.glass,bumpScale:.00045,roughness:.23,metalness:0,transmission:lowPower?0:.72,transparent:true,opacity:lowPower?.65:1,thickness:.018,ior:1.48,depthWrite:false}),stone:mat('#b2a18a',{roughness:.8}),fabric:new THREE.MeshPhysicalMaterial({color:FABRICS.linen[0],bumpMap:weave,bumpScale:.0007,roughness:.92,sheen:.35,sheenRoughness:.85,sheenColor:'#eee9de'}),seam:mat('#b9ad98',{roughness:1})};
+ m.steel=mat('#dadcdb',{metalness:.95,roughness:.23});
+ m.mirror=mat('#eeeeea',{metalness:1,roughness:.08});
+ m.cane=mat('#ded2ad',{alphaMap:maps.cane,alphaTest:.5,side:THREE.DoubleSide,roughness:.9});
+ m.clearGlass=new THREE.MeshPhysicalMaterial({color:'#ffffff',roughness:.08,transmission:lowPower?0:.92,transparent:true,opacity:lowPower?.18:1,thickness:.006,ior:1.48,depthWrite:false});
  const interior=createRoom(scene,lowPower,m.wood);
  const contact=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:maps.shadow,transparent:true,depthWrite:false,toneMapped:false,opacity:.65}));contact.rotation.x=-Math.PI/2;scene.add(contact);
  let currentQuality='';

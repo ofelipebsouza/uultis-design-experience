@@ -28,5 +28,25 @@ export const RESOURCES = {
     "spec": "/technical-sheets/?product=291&file=1",
     "official": "/#product/291",
     "description": "Wood supports. Metal defines. Between them, a quiet dialogue emerges through form and proportion. The conical base concentrates solidity and presence; above it, the metal top extends with precision, supported by a vertical blade that intersects the space. Between these two planes rests a sphere, a point of balance and visual tension.\n\nThe forms are elemental: circle, cone, and sphere. These geometries span centuries of architecture and sculpture and continue to symbolize order, permanence, and proportion. In Talha, each element retains its identity while coming together in a single composition in which strength and delicacy coexist.\n\nIn the Simbiose collection, Talha represents the meeting of wood, a living material, and metal, a material shaped by contemporary technique. A dialogue between nature and precision, brought together in a piece with an architectural presence, designed to stand the test of time."
+  },
+  "134": {
+    "spec": "/technical-sheets/?product=134&file=1",
+    "official": "/#product/134",
+    "description": "A trapezoid is a flat geometric shape with four sides. This form suggests grounding and solidity, defining characteristics of the TRAPÉZIO bench. Made of wood with upholstery on top, the piece is a key element for settings that need a touch of warmth and comfort."
+  },
+  "12": {
+    "spec": "/technical-sheets/?product=12&file=1",
+    "official": "/#product/12",
+    "description": "The Arc coffee table blends the natural character of wood with the contemporary appeal of mirror, creating a light, sophisticated piece. Made from MDF faced with natural wood veneer, it has a glass or mirrored top and lacquered MDF legs. The table is available in three sizes."
+  },
+  "80": {
+    "spec": "/technical-sheets/?product=80&file=1",
+    "official": "/#product/80",
+    "description": "Li is a set of side tables with an exceptionally clean, minimalist style. A top finished in natural wood veneer and a stainless steel base create a strong sense of harmony between these two distinct materials."
+  },
+  "211": {
+    "spec": "/technical-sheets/?product=211&file=1",
+    "official": "/#product/211",
+    "description": "All the natural appeal of clean, gentle forms. Inspired by vintage style, its structure is made of solid wood with natural cotton-based weaving. It features a clear tempered-glass top over the natural weave, adding sophistication and durability. The finish is beautiful."
   }
 };

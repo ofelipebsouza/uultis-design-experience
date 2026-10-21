@@ -8,9 +8,13 @@ export const PRODUCTS = {
  '289':{name:'Sintonia',designer:'Estúdio Uultis',category:'Coffee table',description:'Glass, timber and the light between them.',verified:true,variants:[{key:'180',label:'180 × 70 × H 37 cm',w:1.8,d:.7,h:.37},{key:'160',label:'160 × 70 × H 37 cm',w:1.6,d:.7,h:.37}]},
  '82':{name:'Like',designer:'Sérgio Batista',category:'Occasional table',description:'A light silhouette with a distinctive gesture.',verified:false,variants:[{key:'study',label:'Single piece · study proportions',w:.4,d:.4,h:.75}]},
  '64':{name:'Grain',designer:'Stúdio+A!',category:'Stool',description:'Sculpted wood meets a softly upholstered seat.',verified:false,fabric:true,variants:[{key:'study',label:'Stool · study proportions',w:.51,d:.54,h:1.02}]},
+ '134':{name:'Trapézio',designer:'Stúdio+A!',category:'Bench',description:'A grounded wooden frame with a softly upholstered top.',verified:false,fabric:true,variants:[{key:'study',label:'Bench · study proportions',w:1.6,d:.45,h:.46}]},
+ '12':{name:'Arc',designer:'Estúdio Uultis',category:'Coffee table',description:'A low timber frame around a reflective surface.',verified:false,variants:[{key:'study',label:'Rectangular · study proportions',w:1.5,d:.7,h:.23}]},
+ '80':{name:'Li',designer:'Sérgio Batista',category:'Side table',description:'A floating wood surface, supported by an open steel frame.',verified:false,variants:[{key:'study',label:'Side table · study proportions',w:.55,d:.35,h:.6}]},
+ '211':{name:'Plot',designer:'Estúdio Uultis',category:'Coffee table',description:'Natural weaving, glass and a light solid-wood structure.',verified:false,variants:[{key:'study',label:'Coffee table · study proportions',w:1.5,d:.6,h:.35}]},
  '100':{name:'New',designer:'Sérgio Batista',category:'Ottoman',description:'Soft volume. A versatile place to pause.',verified:false,fabric:true,variants:[{key:'square',label:'Square · study proportions',w:.55,d:.55,h:.45},{key:'wide',label:'Wide · study proportions',w:.85,d:.55,h:.45}]}
 };
-export const PRODUCT_IDS = ['290','291','289','82','64','100'];
+export const PRODUCT_IDS = ['290','291','289','82','64','100','134','12','80','211'];
 export const FINISHES = {oak:['#c5a57a','Natural oak'],walnut:['#8b6247','Warm walnut'],dark:['#51483e','Smoked wood']};
 export const FABRICS = {linen:['#d9cfbc','Natural linen'],sage:['#899180','Sage weave'],clay:['#af7963','Clay weave']};
 export function addMesh(g,m,parent,x=0,y=0,z=0){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
@@ -81,6 +85,34 @@ export function buildModel(id,variant,m){
   for(const x of [-.25,.25])addMesh(new THREE.SphereGeometry(.025,24,16),m.wood,group,x,.948,-.18);
   const back=cushion(.40,.145,.105,m.fabric,group,0,.95,-.176,.85);back.rotation.x=-.12;
   rod([-.20,.29,.18],[.20,.29,-.18],.013,m.wood,group);
+ }else if(id==='134'){
+  rounded(w*.88,.085,d,m.wood,group,0,h-.085,0,.012);
+  for(const side of [-1,1]){const leg=rounded(.11,h-.065,d*.94,m.wood,group,side*w*.43,(h-.065)/2,0,.009);leg.rotation.z=side*.22;}
+  cushion(w*.86,.065,d*.96,m.fabric,group,0,h-.0325,0,.35);
+ }else if(id==='12'){
+  rounded(w*.83,.035,d*.7,m.darkMetal,group,0,.0175,0,.007);
+  rounded(w-.04,.025,d-.04,m.wood,group,0,.06,0,.004);
+  for(const z of [-1,1])rounded(w,.17,.023,m.wood,group,0,.145,z*(d/2-.0115),.003);
+  for(const x of [-1,1])rounded(.023,.17,d-.046,m.wood,group,x*(w/2-.0115),.145,0,.003);
+  slab(w-.048,d-.048,.008,.005,m.mirror||m.metal,group,0,.214,0);
+ }else if(id==='80'){
+  slab(w,d,.022,.035,m.top,group,0,h-.011,0);
+  const steel=m.steel||m.metal;
+  for(const x of [-w*.35,w*.35]){
+   rounded(.014,.014,d*.87,steel,group,x,.012,0,.002);
+   for(const z of [d*.22,d*.42])rounded(.014,h-.04,.014,steel,group,x,(h-.04)/2+.018,z,.002);
+   rounded(.014,.014,d*.22,steel,group,x,.025,d*.32,.002);
+  }
+  rounded(w*.72,.014,.014,steel,group,0,.012,-d*.43,.002);
+ }else if(id==='211'){
+  for(const z of [-1,1])rounded(w,.055,.035,m.wood,group,0,h-.04,z*(d/2-.018),.015);
+  for(const x of [-1,1])rounded(.035,.055,d-.04,m.wood,group,x*(w/2-.018),h-.04,0,.015);
+  for(const x of [-1,1]){
+   const xx=x*w*.35;rod([xx,.245,-d*.42],[xx,.245,d*.42],.03,m.wood,group);
+   for(const z of [-1,1])rod([xx+x*.07,.018,z*d*.43],[xx,.27,z*d*.34],.023,m.wood,group,.013);
+  }
+  const weave=addMesh(new THREE.PlaneGeometry(w-.06,d-.06),m.cane||m.fabric,group,0,h-.032,0);weave.rotation.x=-Math.PI/2;weave.castShadow=false;
+  const glass=slab(w-.065,d-.065,.006,.015,m.clearGlass||m.glass,group,0,h-.012,0);glass.castShadow=false;
  }else if(id==='100'){
   cushion(w-.015,h-.045,d-.015,m.fabric,group,0,(h-.045)/2+.045,0,.24);
   for(const x of [-w*.30,w*.30])rounded(.08,.045,d*.64,m.wood,group,x,.0225,0,.006);
