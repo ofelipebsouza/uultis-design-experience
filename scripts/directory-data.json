@@ -1,0 +1,62 @@
+[
+  {
+    "type": "store",
+    "name": "Uultis Store Dois Irmãos",
+    "country": "BR",
+    "state": "RS",
+    "city": "Dois Irmãos",
+    "details": [
+      "BR 116, Portal da Serra, Dois Irmãos - RS, 93950-000"
+    ]
+  },
+  {
+    "type": "store",
+    "name": "Outlet Miami",
+    "country": "US",
+    "state": "FL",
+    "city": "Miami",
+    "details": [
+      "2410 NW 116th, -, Miami - FL, 33167"
+    ]
+  },
+  {
+    "type": "store",
+    "name": "Uultis Los Angeles",
+    "country": "US",
+    "state": "CA",
+    "city": "Lomita",
+    "details": [
+      "Pacific Coast Hwy, -, Lomita - CA, 90717"
+    ]
+  },
+  {
+    "type": "store",
+    "name": "Uultis Miami",
+    "country": "US",
+    "state": "FL",
+    "city": "Miami",
+    "details": [
+      "North Miami Avenue, Wynwood, Miami - FL, 33127"
+    ]
+  },
+  {
+    "type": "store",
+    "name": "Uultis St. Peterburg",
+    "country": "US",
+    "state": "FL",
+    "city": "St. Peterburg",
+    "details": [
+      "4th St N, -, St. Peterburg - FL, 33704"
+    ]
+  },
+  {
+    "type": "store",
+    "name": "Uultis Europe Showroom",
+    "country": "NL",
+    "state": "GE",
+    "city": "Culemborg",
+    "details": [
+      "ETC Design Center - A Randweg 20, 4104 AC, Culemborg - GE, Booth number 14c/16"
+    ]
+  }
+]

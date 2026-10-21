@@ -39,9 +39,9 @@ for(let i=0;i<7;i++){
   cylinder(.008,.013,1.15,stemMat,branch,0,.55,0,8);
   for(let j=0;j<6;j++){const leaf=mesh(new THREE.SphereGeometry(1,8,6),leafMat,branch,Math.sin(j*2)*.12,.3+j*.14,Math.cos(j*2)*.12);leaf.scale.set(.07,.02,.17);leaf.rotation.set(.3,j*2,.5);}
 }
-scene.add(new THREE.HemisphereLight('#fff4dc','#8a806d',1.8));
+scene.add(new THREE.HemisphereLight('#fff4dc','#8a806d',1.25));
 const sun=new THREE.DirectionalLight('#fff0d2',4.0);sun.position.set(-3,5,3);sun.castShadow=true;
-sun.shadow.mapSize.set(lowPower?1024:2048,lowPower?1024:2048);Object.assign(sun.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:.1,far:14});sun.shadow.bias=-.0004;sun.shadow.normalBias=.015;sun.shadow.radius=3;scene.add(sun);
+sun.shadow.mapSize.set(lowPower?1024:2048,lowPower?1024:2048);Object.assign(sun.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:.1,far:14});sun.shadow.bias=-.0001;sun.shadow.normalBias=.003;sun.shadow.radius=3;scene.add(sun);
 const fill=new THREE.DirectionalLight('#e5edff',1.0);fill.position.set(4,3,2);scene.add(fill);
 // Soft directional light patches across the rear wall.
 const patchMat=new THREE.MeshBasicMaterial({color:'#f4e6cc',transparent:true,opacity:.25,depthWrite:false});

@@ -9,7 +9,7 @@ function announce(message){$('#action-status').textContent=message;}
 function pressed(attr,value){$$(`[data-${attr}]`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr]===value)));}
 function update(rebuild=false){
  for(const key of ['finish','fabric','room','stage'])pressed(key,state[key]);
- $('#finish-label').textContent=FINISHES[state.finish][1];$('#fabric-label').textContent=FABRICS[state.fabric][1];$('#lighting').value=state.lighting;
+ $('#finish-label').textContent=FINISHES[state.finish][1];$('#fabric-label').textContent=FABRICS[state.fabric][1];$('#lighting').value=state.lighting;$('#quality').value=state.quality;
  for(const [id,key,suffix] of [['placement','x',' m'],['depth','z',' m'],['rotation','rotation','°']]){$('#'+id).value=state[key];$('#'+id+'-value').textContent=(key==='rotation'?state[key]:state[key].toFixed(2))+suffix;}
  $('#dimensions').setAttribute('aria-pressed',String(state.dimensions));$('#dimension-readout').hidden=!state.dimensions;
  const v=variant(),p=PRODUCTS[state.product];$('#dimension-readout').textContent=`${p.verified?'Overall dimensions':'Approximate study dimensions'} · W ${(v.w*100).toFixed(1)} × D ${(v.d*100).toFixed(1)} × H ${(v.h*100).toFixed(1)} cm`;
@@ -22,13 +22,13 @@ function selectProduct(id,initial=false){
  $('#size').replaceChildren(...p.variants.map(v=>{const o=document.createElement('option');o.value=v.key;o.textContent=v.label;return o;}));$('#size').value=state.variant;
  $('#dimension-source').textContent=p.verified?'FROM THE TECHNICAL SHEET':'APPROXIMATE STUDY PROPORTIONS';$('#fabric-field').hidden=!p.fabric;
  $('#product-link').href=`/#product/${id}`;$('#product-link').textContent=`Discover ${p.name} ↗`;$('#spec-link').href=RESOURCES[id].spec;
- $('#fallback-image').src=`../assets/${id}-thumb.webp`;$('#fallback-image').alt=`${p.name} product photograph`;
+ $('#fallback-image').src=`../assets/${id}-thumb.webp`;$('#fallback-image').alt=`${p.name} product photograph`;$('#reference-image').src=`../assets/${id}-thumb.webp`;$('#reference-image').alt=`${p.name} reference photograph`;$('#reference-description').textContent=RESOURCES[id].description;
  $('#announcement').textContent=`${p.name} selected. ${variant().label}.`;update(true);studio?.fit(state.stage==='object'||id==='291'||id==='82'||id==='64'?'detail':'room');
 }
 function fallback(){studio?.setAuto(false);studio?.dispose();studio=null;auto=false;$('#auto-rotate').setAttribute('aria-pressed','false');$('#viewport').hidden=true;$('#fallback').hidden=false;$('.scene-section').classList.add('photo-mode');$$('[data-render-control] button,[data-render-control] input,[data-render-control] select,.view-tools button').forEach(e=>e.disabled=true);announce('Photo mode is active. Product selection and technical sheets remain available.');}
 $$('[data-product]').forEach(b=>b.onclick=()=>selectProduct(b.dataset.product));
 for(const key of ['finish','fabric','room','stage'])$$(`[data-${key}]`).forEach(b=>b.onclick=()=>{state[key]=b.dataset[key];update();if(key==='stage')studio?.fit(state.stage==='object'?'detail':'room');});
-$('#size').onchange=()=>{state.variant=$('#size').value;update(true);studio?.fit('detail');};$('#lighting').onchange=()=>{state.lighting=$('#lighting').value;update();};
+$('#size').onchange=()=>{state.variant=$('#size').value;$('#announcement').textContent=`${PRODUCTS[state.product].name}: ${variant().label}.`;update(true);studio?.fit('detail');};$('#quality').onchange=()=>{state.quality=$('#quality').value;update();};$('#lighting').onchange=()=>{state.lighting=$('#lighting').value;update();};
 for(const[id,key]of [['placement','x'],['depth','z'],['rotation','rotation']])$('#'+id).oninput=()=>{state[key]=Number($('#'+id).value);update();};
 $('#dimensions').onclick=()=>{state.dimensions=!state.dimensions;update();};
 $('#auto-rotate').onclick=()=>{auto=!auto;studio?.setAuto(auto);$('#auto-rotate').setAttribute('aria-pressed',String(auto));};
