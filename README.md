@@ -152,11 +152,17 @@ Primary sources: [Uultis](https://www.uultis.com/) and [Uultis USA](https://usa.
 
 ## Native Room Studio
 
-`/room-studio/` is a self-hosted, interactive WebGL interior for **Star (290)** and **Talha (291)**. Direct selection: `/room-studio/?product=290` or `?product=291`. Entry points appear in the main navigation, homepage, footer and both product detail dialogs.
+`/room-studio/` contains six self-hosted furniture studies: Star (290), Talha (291), Sintonia (289), Like (82), Grain (64) and New (100). All six product details link directly to the studio. Official SketchUp/Casoca links remain available in the catalog.
 
-- Mouse/touch orbit, wheel/pinch zoom, keyboard arrows and +/-; explicit Detail, Room and Reset views.
-- Star: 1.40 or 1.60 m diameter, 0.745 m overall height. Talha: 0.30 m diameter, 0.465 or 0.565 m overall height. Dimensions transcribed from the official MH-9153 and MH-9137/MH-9138 technical sheets.
-- Parametric meshes approximate the original silhouettes; these are **design studies, not manufacturer CAD models**. Three illustrative wood studies and two room palettes do not assert commercial availability. Generic contextual furniture is not part of the product catalog.
-- Local Three.js r180 / 0.180.0 and OrbitControls, MIT license included in `dist/assets/vendor/THREE-LICENSE.txt`. No runtime CDN or modeling-service login required. Render-on-demand, capped pixel ratio and context-loss fallback keep the demo lightweight.
-- Geometry is authored in `dist/room-studio/studio.js`. No Blender or SketchUp runtime is needed. Official SketchUp/Casoca links and all technical sheets remain in the catalog.
-- Model and library imports are isolated to the studio page, so the homepage does not load the 3D renderer.
+- Ten size/proportion variants; orbit, zoom, keyboard controls, detail/room/top views, isolated object stage, two room palettes, three lighting presets, placement along two axes, rotation, dimensions, optional auto orbit, fullscreen, PNG capture and shareable configuration URLs.
+- Three illustrative wood studies and three textiles for upholstered pieces. Rounded upholstery, seams, fluted wood, curved steel, bump textures, amber glass and environment reflections add detail without downloaded model files. Materials are illustrative, not a claim of commercial availability.
+- Star dimensions: diameter 1.40/1.60 m, height 0.745 m. Talha: diameter 0.30 m, height 0.465/0.565 m. Sintonia: width 1.60/1.80 m, depth 0.70 m, height 0.37 m. These overall measurements are transcribed from official technical sheets. Like, Grain and New use **estimated study proportions**, explicitly labeled in the interface.
+- These are **approximate design studies, not official CAD or photorealistic product reproductions**. Generic room props are not catalog products. No Blender/SketchUp runtime is required.
+- Geometry and metadata: `dist/room-studio/products.js`. Renderer and materials: `renderer.js`; context room: `room.js`; UI: `studio.js`; validated share state: `state.js`.
+- Local Three.js r180 / 0.180.0, OrbitControls, RoundedBoxGeometry and RoomEnvironment; MIT license in `dist/assets/vendor/THREE-LICENSE.txt`. No runtime CDN or modeling-service login. The homepage does not load the renderer.
+- Render on demand; optional orbit capped near 30 fps and paused while hidden. Mobile/coarse pointer or Save Data uses lower pixel ratio, smaller shadow maps and lightweight transparent glass. One product model is mounted at a time, with geometry disposal on switching. Textures and environment are generated once locally. No heavy HDR files.
+- No-WebGL/context-loss mode keeps all six product choices, size variants, photographs, sharing and technical sheets usable. Only 3D controls are disabled.
+
+Validation: `node scripts/test-studio.mjs` verifies all 10 variants, finite vertices, exact declared bounding dimensions, geometry disposal, triangle/mesh budgets and share-state validation. Largest product: 3,292 triangles / 13 meshes; context room: 7,012 triangles. These are geometry budgets, not measured device frame rates. `npm run build` validates required files and prepares `public/`.
+
+The cloud browser used for verification has WebGL disabled. Product selection and the photo fallback can be checked there; GPU rendering, image capture and fullscreen still require validation on a WebGL-capable device.

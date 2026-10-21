@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const source = join(projectRoot, 'dist');
 const output = join(projectRoot, 'public');
-const required = ['index.html', 'styles.css', 'app.js', 'branding/index.html', 'style-guide/index.html', 'assets/catalog.js', 'room-studio/index.html', 'room-studio/studio.js', 'room-studio/studio.css', 'assets/vendor/three.module.js', 'assets/vendor/three.core.js', 'assets/vendor/OrbitControls.js'];
+const required = ['index.html', 'styles.css', 'app.js', 'branding/index.html', 'style-guide/index.html', 'assets/catalog.js', 'room-studio/index.html', 'room-studio/studio.js', 'room-studio/studio.css', 'room-studio/products.js', 'room-studio/resources.js', 'room-studio/state.js', 'room-studio/renderer.js', 'room-studio/room.js', 'assets/vendor/RoomEnvironment.js', 'assets/vendor/RoundedBoxGeometry.js', 'assets/vendor/three.module.js', 'assets/vendor/three.core.js', 'assets/vendor/OrbitControls.js'];
 
 for (const path of required) {
   if (!existsSync(join(source, path))) throw new Error(`Required file missing: dist/${path}`);
