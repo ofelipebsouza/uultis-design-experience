@@ -1,0 +1,48 @@
+/* A progressively enhanced image study. Static content is the default. */
+.close-study{background:#302d28;color:#f3f0ea;scroll-margin-top:76px}
+.study-intro{padding-bottom:64px}
+.study-intro .section-label{color:#d8cfc1}
+.study-intro-grid{display:grid;grid-template-columns:1fr .65fr;gap:12%;align-items:end}
+.study-intro-grid>div>p{font-size:15px;line-height:1.85;color:#e0d9cf;max-width:380px}
+.study-tools{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:28px;font-size:11px}
+.study-tools a,.study-tools button{display:inline-flex;align-items:center;min-height:44px;border-bottom:1px solid #a69c8c}
+.study-tools button[aria-pressed=true]{color:#fff}
+.study-story{position:relative}
+.study-stage{padding:0 var(--pad)}
+.study-sidebar,.study-chapters{display:none}
+.study-frames{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 28px}
+.study-frame{min-width:0;margin:0}
+.study-frame img{display:block;width:100%;aspect-ratio:16/9;height:auto;object-fit:cover;background:#cfc5b6}
+.study-frame figcaption{display:flex;gap:20px;padding-top:22px;max-width:440px}
+.study-frame figcaption>span{font-size:10px;letter-spacing:.1em;line-height:2.2;color:#c7beaf}
+.study-frame h3{font-size:23px;letter-spacing:-.025em;margin:0 0 9px}
+.study-frame figcaption p{font-size:12px;line-height:1.8;color:#d8cfc1}
+.study-end{padding:52px var(--pad) 64px;display:flex;gap:32px;justify-content:space-between;align-items:center;scroll-margin-top:100px}
+.study-end>p{font-size:10px;line-height:1.9;color:#d8cfc1;max-width:600px}
+.study-end .text-link{flex-shrink:0;font-size:12px}
+@media(min-width:1000px) and (min-height:600px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  .close-study.is-motion .study-story{height:400svh}
+  .close-study.is-motion .study-stage{position:sticky;top:76px;height:calc(100svh - 76px);min-height:0;max-height:1500px;display:grid;grid-template-columns:minmax(160px,.23fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) 65px;gap:0 3.4vw;padding-top:25px;padding-bottom:20px}
+  .close-study.is-motion .study-sidebar{display:flex;flex-direction:column;padding:18px 0 12px}
+  .study-sidebar>.eyebrow{font-size:8px;letter-spacing:.16em;color:#c7beaf}
+  .study-sidebar>h3{font-size:clamp(32px,3.3vw,56px);line-height:1.1;letter-spacing:-.04em;margin:14px 0}
+  .study-designer{font-size:10px;color:#d8cfc1;line-height:1.7}
+  .study-current{margin:auto 0;max-width:200px;padding:30px 0}
+  .study-current>span{font-size:9px;letter-spacing:.16em;color:#c7beaf}
+  .study-current h4{font-size:24px;font-weight:300;letter-spacing:-.035em;line-height:1.2;margin:22px 0 13px}
+  .study-current p{font-size:12px;line-height:1.85;color:#e0d9cf}
+  .study-scroll-note{font-size:7px;letter-spacing:.14em;line-height:1.7;color:#c7beaf}
+  .close-study.is-motion .study-frames{display:block;position:relative;min-height:0;overflow:hidden;background:#d3c9ba}
+  .close-study.is-motion .study-frame{position:absolute;inset:0;overflow:hidden;will-change:clip-path}
+  .close-study.is-motion .study-frame img{height:100%;width:100%;object-fit:cover;will-change:transform}
+  .close-study.is-motion .study-frame figcaption{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;margin:0;padding:0}
+  .close-study.is-motion .study-chapters{grid-column:2;display:flex;align-items:stretch;gap:20px}
+  .study-chapters button{position:relative;flex:1;text-align:left;font-size:9px;letter-spacing:.03em;line-height:1.5;min-height:44px;padding:16px 0 12px;color:#d8cfc1}
+  .study-chapters button>span{font-size:8px;margin-right:10px;color:#c7beaf}
+  .study-chapters button[aria-current=step]{color:#fff}
+  .study-chapters button::after,.study-chapters i{content:'';position:absolute;bottom:3px;left:0;width:100%;height:1px;background:#746b5e}
+  .study-chapters i{z-index:1;background:#f3f0ea;transform:scaleX(0);transform-origin:left}
+}
+@media(max-width:999px){.study-intro-grid{gap:6%}.study-intro-grid>div>p{font-size:13px}.study-intro{padding-bottom:42px}.study-end{align-items:flex-start;flex-direction:column;gap:20px}.study-tools{margin-top:18px}}
+@media(max-width:699px){.study-intro .section-label{gap:20px;line-height:1.8}.study-intro .section-label>span:last-child{max-width:125px;text-align:right}.study-intro-grid{grid-template-columns:1fr;gap:30px}.study-intro-grid .display-title{font-size:clamp(48px,13vw,80px)}.study-frames{grid-template-columns:1fr;gap:38px}.study-frame figcaption{padding-top:18px;gap:16px}.study-frame h3{font-size:23px}.study-end{padding-top:42px}.study-end>p{font-size:9px}.study-end .text-link{width:100%;justify-content:space-between}.study-tools{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.close-study *{scroll-behavior:auto!important}.study-frame,.study-frame img{transform:none!important;clip-path:none!important;will-change:auto!important}}

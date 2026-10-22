@@ -183,3 +183,17 @@ The studio now includes finer curved geometry, the Star radial veneer texture, T
 `/blog/` includes three original editorial guides with individual article routes. `/biolink/` is a mobile-first link hub for the collection, studio, journal, showrooms, contact, branding and style guide. Run `python scripts/generate-journal.py` to regenerate these pages and the shared editorial destinations. No CMS or external blogging service is required.
 
 The four additional studio products use approximate, explicitly labelled study proportions, based on catalog photographs. Arc uses an environment-reflective material (not a planar room reflection), Li has a steel frame, Plot uses a cutout weave map under a clear glass study, and Trapézio supports fabric choices. Each remains within the existing 20,000-triangle / 30-mesh budget.
+
+
+## Igriega — a closer look
+
+`/#close-study` is a four-frame editorial image study of Igriega (catalog ID 274), by Artur de Menezes. It is separate from the catalog gallery: the product’s existing official photographs, hover behavior, descriptions, technical sheets and 3D resources are unchanged.
+
+- The new images are **AI-generated visual studies based on the catalog references, not official product photographs**. They are labeled as such in the section and alternative text. They do not establish finish availability, dimensions or manufacturing details.
+- Four 16:9 images follow the whole piece, the arm/wood encounter, the seat texture and the frontal balance. Responsive WebP assets live in `dist/assets/close-study/`; original masters and the generation manifest are delivered separately.
+- `dist/close-study/study.js` progressively enhances the semantic, static HTML gallery only on fine-pointer desktop viewports of at least 1000 × 600 CSS pixels, without reduced motion. Four chapters follow the browser’s native scroll, with CSS sticky positioning, short GSAP image wipes and a 5.5% push. No wheel/touch interception, snapping, smooth-scroll replacement, autoplay video or canvas is used.
+- Mobile, touch, reduced-motion, script/image failures and the visitor’s “View all stills” choice retain an ordinary gallery. The motion preference is observed at runtime. “Skip the study” bypasses the entire sequence. Each chapter is keyboard reachable through its frame button.
+- GSAP 3.15.0 and ScrollTrigger 3.15.0 are self-hosted in `dist/assets/vendor/`, with the original copyright/license headers and package README preserved. Upstream: https://gsap.com/ and https://gsap.com/standard-license. They load only near this section on eligible devices; no animation library is requested on small/touch/reduced-motion displays. There is no external runtime CDN dependency.
+- Image decoding completes before motion enhancement. Changing to the catalog disposes of this timeline; returning creates one fresh timeline, rather than accumulating scroll listeners. Four still frames, not a frame-by-frame video, are being scrubbed. The masters are also suitable as starting points for the user’s later video production.
+
+Validation: `node scripts/test-close-study.mjs`, `node scripts/test-card-images.mjs`, `python scripts/test-navigation.py`, `node scripts/test-studio.mjs`, and `npm run build`. Runtime modeling and actual browser visual review are recorded separately; source checks alone do not establish appearance or device frame rate.

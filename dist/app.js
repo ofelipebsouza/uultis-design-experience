@@ -493,6 +493,11 @@
   },true);
   document.addEventListener('error',event => {
     const img = event.target;
+    // Editorial studies keep their descriptive alt text, not a product-logo fallback.
+    if (img.tagName === 'IMG' && img.dataset.studyImage !== undefined) {
+      img.dataset.failed = 'true';
+      return;
+    }
     if (img.tagName === 'IMG' && img.classList.contains('card-alternate')) {
       img.closest('.product-image-link')?.classList.remove('has-alternate');
       img.remove();
