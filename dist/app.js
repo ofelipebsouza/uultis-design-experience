@@ -483,8 +483,21 @@
     }
     if (event.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !$('dialog[open]')) { event.preventDefault(); showSearch(); }
   });
+  // Keep the primary photograph until its alternate is safe to display.
+  document.addEventListener('load',event => {
+    const img = event.target;
+    if (img.tagName !== 'IMG' || !img.classList.contains('card-alternate')) return;
+    img.decode().then(() => {
+      if (img.isConnected && img.naturalWidth > 0) img.closest('.product-image-link')?.classList.add('has-alternate');
+    }).catch(() => { /* A failed alternate must not hide the primary photograph. */ });
+  },true);
   document.addEventListener('error',event => {
     const img = event.target;
+    if (img.tagName === 'IMG' && img.classList.contains('card-alternate')) {
+      img.closest('.product-image-link')?.classList.remove('has-alternate');
+      img.remove();
+      return;
+    }
     if (img.tagName === 'IMG' && !img.dataset.failed) {
       img.dataset.failed = 'true';
       img.src = 'assets/logo-black.svg';
