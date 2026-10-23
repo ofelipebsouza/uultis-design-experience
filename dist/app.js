@@ -482,11 +482,16 @@
     if (productsPrimedOpen) { productsPrimedOpen = false; return; }
     setProductsMenu(productsMegaMenu.hidden);
   });
+  productsMegaMenu?.addEventListener('mouseenter',() => {
+    clearTimeout(productsCloseTimer);
+    if (productsMegaMenu.hidden) setProductsMenu(true,false,true);
+  });
   productsMenuGroup?.addEventListener('mouseenter',() => {
     if (window.matchMedia('(pointer: coarse)').matches) return;
     if (productsMegaMenu.hidden) setProductsMenu(true,false,true);
   });
   productsMenuGroup?.addEventListener('mouseleave',scheduleProductsMenuClose);
+  productsMegaMenu?.addEventListener('mouseleave',scheduleProductsMenuClose);
   productsMenuGroup?.addEventListener('focusin',() => {
     if (productsMegaMenu.hidden) setProductsMenu(true,false,true);
   });

@@ -6,11 +6,11 @@ A digital experience concept for Uultis, with an editorial presentation, an inte
 
 **Published pages:**
 
-- [Main experience](https://uultis-design-experience.vercel.app/)
-- [Branding](https://uultis-design-experience.vercel.app/branding/)
-- [Style Guide](https://uultis-design-experience.vercel.app/style-guide/)
+- [Main experience](https://uultis.vercel.app/)
+- [Branding](https://uultis.vercel.app/branding/)
+- [Style Guide](https://uultis.vercel.app/style-guide/)
 
-Production uses the `uultis-design-experience.vercel.app` domain and the `main` branch of the GitHub repository.
+Production uses the `uultis.vercel.app` domain and the `main` branch of the GitHub repository.
 
 The project uses static HTML, CSS and JavaScript, published on Vercel. Authoring files live in `dist/`. Running `npm run build` with Node.js 22 or later copies them to `public/`, the directory served by Vercel. The build has no external package dependencies.
 
@@ -95,7 +95,7 @@ The Vercel project `uultis-design-experience` is connected to the GitHub reposit
 
 Vercel runs `scripts/build.mjs` through `npm run build`, using Node.js 22 or later. This step prepares publication output by copying static files from `dist/` into `public/`; it requires neither framework compilation nor dependency installation. The `/`, `/branding/` and `/style-guide/` routes are served from that directory structure.
 
-The configured origin is `https://uultis-design-experience.vercel.app`. All three pages use this domain in their canonical, `og:url` and `og:image` metadata, with a distinct canonical URL for each route. English is declared in document language and social metadata. The concept retains `noindex, nofollow`.
+The configured origin is `https://uultis.vercel.app`. All three pages use this domain in their canonical, `og:url` and `og:image` metadata, with a distinct canonical URL for each route. English is declared in document language and social metadata. The concept retains `noindex, nofollow`.
 
 ## Maintenance
 

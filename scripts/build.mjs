@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,6 +15,20 @@ for (const path of required) {
 rmSync(output, { recursive: true, force: true });
 mkdirSync(output, { recursive: true });
 cpSync(source, output, { recursive: true });
+
+function collectPageRoutes(directory, route = '') {
+  const routes = [];
+  if (existsSync(join(directory, 'index.html'))) routes.push(route || '/');
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (entry.isDirectory()) routes.push(...collectPageRoutes(join(directory, entry.name), `${route}/${entry.name}`));
+  }
+  return routes;
+}
+
+const sitemapRoutes = [...new Set(collectPageRoutes(output))].sort();
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapRoutes.map(route => `  <url><loc>https://uultis.vercel.app${route === '/' ? '/' : `${route}/`}</loc></url>`).join('\n')}\n</urlset>\n`;
+writeFileSync(join(output, 'sitemap.xml'), sitemap);
+writeFileSync(join(output, 'robots.txt'), 'User-agent: *\nDisallow:\nSitemap: https://uultis.vercel.app/sitemap.xml\n');
 
 function countFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).reduce((total, entry) =>
