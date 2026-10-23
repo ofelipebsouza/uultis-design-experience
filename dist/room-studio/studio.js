@@ -1,6 +1,9 @@
 import { PRODUCTS, FINISHES, FABRICS } from './products.js';
 import { RESOURCES } from './resources.js';
 import { readState, stateQuery } from './state.js';
+const studioHeader=document.querySelector('header');
+if(studioHeader){studioHeader.className='studio-header';studioHeader.innerHTML='<a href="/" aria-label="Uultis home"><img src="../assets/logo-black.svg" alt="Uultis" width="108" height="34"></a><nav class="studio-nav" aria-label="Primary navigation"><a href="/#collection">Products</a><a href="/#essence">Our Essence</a><a href="/blog/">Journal</a><a href="/stores/">Stores</a><a href="/corporate/">Trade / Dealers</a></nav><a class="back" href="/#collection">Back to collection <span aria-hidden="true">↗</span></a>';}
+if(studioHeader){studioHeader.insertAdjacentHTML('beforeend','<details class="studio-mobile-menu"><summary>Menu</summary><nav aria-label="Mobile navigation"><a href="/#collection">Products</a><a href="/#essence">Our Essence</a><a href="/blog/">Journal</a><a href="/stores/">Stores</a><a href="/corporate/">Trade / Dealers</a></nav></details>');}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const state=readState(location.search,PRODUCTS);let studio=null,auto=false;
 const variant=()=>PRODUCTS[state.product].variants.find(v=>v.key===state.variant);

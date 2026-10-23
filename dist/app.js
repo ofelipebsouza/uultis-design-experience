@@ -13,6 +13,9 @@
   const productDialog = $('#product-dialog');
   const searchDialog = $('#search-dialog');
   const menuDialog = $('#menu-dialog');
+  const productsMenuGroup = $('#products-menu-group');
+  const productsTrigger = $('#open-products');
+  const productsMegaMenu = $('#products-megamenu');
   const filmDialog = $('#film-dialog');
   const curatedIds = ['274','269','300','295','314','28','303','273','298','267','286','308','294','65','120','18','297','281','302','258','142','257','169','8'];
   const curatedRank = new Map(curatedIds.map((id, i) => [id,i]));
@@ -26,6 +29,7 @@
   let closingForRoute = false;
   let currentMaterial = -1;
   let manualMaterial = null;
+  let pendingMenuCategory = '';
   let needsFrame = false;
   let searchTimer;
   const searchIndexes = new Map(products.map(p => [p.id, normalize([p.name,p.category,p.designer,p.description,...(p.tags || []).map(t => t.label)].join(' '))]));
@@ -138,6 +142,32 @@
     const anyOpen = !!$('dialog[open]');
     document.body.classList.toggle('dialog-open',anyOpen);
     $('#open-menu').setAttribute('aria-expanded',String(menuDialog.open));
+  }
+
+  let productsCloseTimer;
+  let productsPrimedOpen = false;
+  function setProductsMenu(open, restoreFocus = false, prime = false) {
+    if (!productsMegaMenu || !productsTrigger) return;
+    clearTimeout(productsCloseTimer);
+    productsMegaMenu.hidden = !open;
+    productsTrigger.setAttribute('aria-expanded',String(open));
+    productsMenuGroup?.classList.toggle('is-open',open);
+    productsPrimedOpen = open && prime;
+    if (!open && restoreFocus) productsTrigger.focus({preventScroll:true});
+  }
+  function closeProductsMenu(restoreFocus = false) { setProductsMenu(false,restoreFocus); }
+  function scheduleProductsMenuClose() {
+    clearTimeout(productsCloseTimer);
+    productsCloseTimer = setTimeout(() => closeProductsMenu(),160);
+  }
+  function selectMenuCategory(category) {
+    pendingMenuCategory = category;
+    state.query = '';
+    state.limit = 24;
+    closeProductsMenu();
+    closeDialog(menuDialog);
+    if (location.hash === '#collection') route();
+    else location.hash = '#collection';
   }
 
   function openDialog(dialog) {
@@ -294,10 +324,16 @@
       activeProductId = null;
     }
     closeDialog(menuDialog);
+    closeProductsMenu();
     baseHash = hash;
     const mode = hash === '#favorites' ? 'favorites' : hash === '#simbiose' ? 'simbiose' : hash === '#collection' ? 'all' : null;
     if (mode) {
       openCatalog(mode);
+      if (pendingMenuCategory) {
+        state.category = pendingMenuCategory;
+        pendingMenuCategory = '';
+        renderCatalog();
+      }
       if (!wasProduct) window.scrollTo({top:0,behavior:'instant'});
     } else {
       state.view = 'home';
@@ -388,6 +424,13 @@
   }
 
   document.addEventListener('click',event => {
+    const menuCategory = event.target.closest('[data-menu-category]');
+    if (menuCategory) {
+      event.preventDefault();
+      selectMenuCategory(menuCategory.dataset.menuCategory);
+      return;
+    }
+    if (productsMenuGroup?.contains(event.target) && event.target.closest('a') && event.target.closest('a') !== productsTrigger) closeProductsMenu();
     const favorite = event.target.closest('[data-favorite]');
     if (favorite) {
       event.preventDefault();
@@ -433,7 +476,23 @@
   });
 
   $('#open-search').addEventListener('click',showSearch);
-  $('#open-menu').addEventListener('click',() => openDialog(menuDialog));
+  $('#open-menu').addEventListener('click',() => { closeProductsMenu(); openDialog(menuDialog); });
+  productsTrigger?.addEventListener('click',event => {
+    event.preventDefault();
+    if (productsPrimedOpen) { productsPrimedOpen = false; return; }
+    setProductsMenu(productsMegaMenu.hidden);
+  });
+  productsMenuGroup?.addEventListener('mouseenter',() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    if (productsMegaMenu.hidden) setProductsMenu(true,false,true);
+  });
+  productsMenuGroup?.addEventListener('mouseleave',scheduleProductsMenuClose);
+  productsMenuGroup?.addEventListener('focusin',() => {
+    if (productsMegaMenu.hidden) setProductsMenu(true,false,true);
+  });
+  productsMenuGroup?.addEventListener('focusout',event => {
+    if (!productsMenuGroup.contains(event.relatedTarget)) scheduleProductsMenuClose();
+  });
   $('#close-product').addEventListener('click',closeProduct);
   $('#global-search').addEventListener('input',event => {
     clearTimeout(searchTimer);
@@ -482,6 +541,7 @@
       return;
     }
     if (event.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !$('dialog[open]')) { event.preventDefault(); showSearch(); }
+    if (event.key === 'Escape' && productsMegaMenu && !productsMegaMenu.hidden) { event.preventDefault(); closeProductsMenu(true); }
   });
   // Keep the primary photograph until its alternate is safe to display.
   document.addEventListener('load',event => {
